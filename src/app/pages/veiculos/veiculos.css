@@ -1,0 +1,18 @@
+.container {
+  max-width: 1200px;
+}
+
+.card {
+  background: #ffffff;
+}
+
+.form-control,
+.form-select,
+.btn {
+  border-radius: 12px;
+}
+
+table th,
+table td {
+  vertical-align: middle;
+}

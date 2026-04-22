@@ -1,0 +1,123 @@
+<a routerLink="/ordens-servico" class="btn btn-outline-secondary">Ordens</a>
+
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1 class="fw-bold mb-1">Itens</h1>
+      <p class="text-muted mb-0">Gerencie peças e serviços</p>
+    </div>
+
+    <div class="d-flex gap-2">
+      <a routerLink="/clientes" class="btn btn-outline-secondary">Clientes</a>
+      <a routerLink="/veiculos" class="btn btn-outline-secondary">Veículos</a>
+      <button class="btn btn-outline-danger" (click)="logout()">Sair</button>
+    </div>
+  </div>
+
+  <div *ngIf="erro" class="alert alert-danger shadow-sm">
+    {{ erro }}
+  </div>
+
+  <div *ngIf="sucesso" class="alert alert-success shadow-sm">
+    {{ sucesso }}
+  </div>
+
+  <div class="row g-4">
+    <div class="col-lg-4">
+      <div class="card shadow-sm border-0 rounded-4">
+        <div class="card-body p-4">
+          <h4 class="fw-semibold mb-3">
+            {{ editando ? 'Editar item' : 'Novo item' }}
+          </h4>
+
+          <div class="mb-3">
+            <label class="form-label">Descrição</label>
+            <input [(ngModel)]="novoItem.descricao" class="form-control" placeholder="Descrição">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Valor</label>
+            <input [(ngModel)]="novoItem.valor" type="number" class="form-control" placeholder="Valor">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Estoque</label>
+            <input [(ngModel)]="novoItem.estoque" type="number" class="form-control" placeholder="Estoque">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Tipo</label>
+            <select [(ngModel)]="novoItem.tipo" class="form-select">
+              <option value="Peca">Peça</option>
+              <option value="Servico">Serviço</option>
+            </select>
+          </div>
+
+          <div class="d-flex gap-2">
+            <button class="btn btn-primary w-100" *ngIf="!editando" (click)="criarItem()">
+              Cadastrar
+            </button>
+
+            <button class="btn btn-success w-100" *ngIf="editando" (click)="salvarEdicao()">
+              Salvar
+            </button>
+
+            <button class="btn btn-secondary" *ngIf="editando" (click)="cancelarEdicao()">
+              Cancelar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-8">
+      <div class="card shadow-sm border-0 rounded-4">
+        <div class="card-body p-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="fw-semibold mb-0">Lista de itens</h4>
+            <span class="badge text-bg-dark">{{ itens.length }} itens</span>
+          </div>
+
+          <div class="table-responsive" *ngIf="itens.length > 0; else semItens">
+            <table class="table align-middle table-hover">
+              <thead class="table-light">
+                <tr>
+                  <th>Descrição</th>
+                  <th>Valor</th>
+                  <th>Estoque</th>
+                  <th>Tipo</th>
+                  <th class="text-center">Ações</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of itens">
+                  <td class="fw-medium">{{ item.descricao }}</td>
+                  <td>{{ item.valor }}</td>
+                  <td>{{ item.estoque }}</td>
+                  <td>{{ item.tipo }}</td>
+                  <td class="text-center">
+                    <div class="d-flex justify-content-center gap-2">
+                      <button class="btn btn-sm btn-warning" (click)="editarItem(item)">
+                        Editar
+                      </button>
+                      <button class="btn btn-sm btn-danger" (click)="deletarItem(item.id)">
+                        Excluir
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <ng-template #semItens>
+            <div class="text-center py-5 text-muted">
+              <h5 class="mb-2">Nenhum item cadastrado</h5>
+              <p class="mb-0">Cadastre o primeiro item usando o formulário ao lado.</p>
+            </div>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

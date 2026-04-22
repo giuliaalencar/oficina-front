@@ -1,0 +1,193 @@
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1 class="fw-bold mb-1">Ordens de Serviço</h1>
+      <p class="text-muted mb-0">Gerencie o fluxo da oficina</p>
+    </div>
+
+    <div class="d-flex gap-2">
+      <a routerLink="/clientes" class="btn btn-outline-secondary">Clientes</a>
+      <a routerLink="/veiculos" class="btn btn-outline-secondary">Veículos</a>
+      <a routerLink="/itens" class="btn btn-outline-secondary">Itens</a>
+      <button class="btn btn-outline-danger" (click)="logout()">Sair</button>
+    </div>
+  </div>
+
+  <div *ngIf="erro" class="alert alert-danger shadow-sm">
+    {{ erro }}
+  </div>
+
+  <div *ngIf="sucesso" class="alert alert-success shadow-sm">
+    {{ sucesso }}
+  </div>
+
+  <div class="row g-4">
+    <div class="col-lg-4">
+      <div class="card shadow-sm border-0 rounded-4">
+        <div class="card-body p-4">
+          <h4 class="fw-semibold mb-3">Nova ordem</h4>
+
+          <div class="mb-3">
+            <label class="form-label">Veículo</label>
+            <select [(ngModel)]="novaOrdem.veiculoId" class="form-select">
+              <option value="">Selecione um veículo</option>
+              <option *ngFor="let veiculo of veiculos" [value]="veiculo.id">
+                {{ veiculo.placa }} - {{ veiculo.marca }} {{ veiculo.modelo }}
+              </option>
+            </select>
+          </div>
+
+          <button class="btn btn-primary w-100" (click)="criarOrdem()">
+            Criar ordem
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-8">
+      <div class="card shadow-sm border-0 rounded-4">
+        <div class="card-body p-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="fw-semibold mb-0">Lista de ordens</h4>
+            <span class="badge text-bg-dark">{{ ordens.length }} ordens</span>
+          </div>
+
+          <div class="table-responsive" *ngIf="ordens.length > 0; else semOrdens">
+            <table class="table align-middle table-hover">
+              <thead class="table-light">
+                <tr>
+                  <th>ID</th>
+                  <th>Veículo</th>
+                  <th>Data</th>
+                  <th>Status</th>
+                  <th>Valor Total</th>
+                  <th class="text-center">Ações</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let ordem of ordens">
+                  <td>#{{ ordem.id }}</td>
+                  <td>{{ nomeVeiculo(ordem.veiculoId) }}</td>
+                  <td>{{ ordem.dataEntrada | date:'short' }}</td>
+                  <td>
+                    <span class="badge text-bg-secondary">{{ ordem.status }}</span>
+                  </td>
+                  <td>{{ ordem.valorTotal | currency:'BRL' }}</td>
+                  <td class="text-center">
+                    <div class="d-flex justify-content-center gap-2 flex-wrap">
+                      <button
+                        class="btn btn-sm btn-primary"
+                        (click)="selecionarOrdem(ordem)"
+                      >
+                        Ver detalhes
+                      </button>
+
+                      <button
+                        *ngIf="proximoStatus(ordem.status)"
+                        class="btn btn-sm btn-warning"
+                        (click)="atualizarStatus(ordem, proximoStatus(ordem.status)!)"
+                      >
+                        Avançar
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <ng-template #semOrdens>
+            <div class="text-center py-5 text-muted">
+              <h5 class="mb-2">Nenhuma ordem criada</h5>
+              <p class="mb-0">Crie a primeira ordem de serviço usando o formulário ao lado.</p>
+            </div>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="ordemSelecionada" class="mt-5">
+    <div class="card shadow-sm border-0 rounded-4">
+      <div class="card-body p-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h4 class="fw-semibold mb-0">Detalhes da ordem #{{ ordemSelecionada.id }}</h4>
+          <span class="badge text-bg-secondary">{{ ordemSelecionada.status }}</span>
+        </div>
+
+        <div class="row mb-4">
+          <div class="col-md-6">
+            <p class="mb-1"><strong>Veículo:</strong> {{ nomeVeiculo(ordemSelecionada.veiculoId) }}</p>
+            <p class="mb-1"><strong>Data:</strong> {{ ordemSelecionada.dataEntrada | date:'short' }}</p>
+          </div>
+
+          <div class="col-md-6 text-md-end">
+            <p class="mb-1"><strong>Valor total:</strong></p>
+            <h4 class="fw-bold text-success">{{ ordemSelecionada.valorTotal | currency:'BRL' }}</h4>
+          </div>
+        </div>
+
+        <hr>
+
+        <h5 class="fw-semibold mb-3">Adicionar item</h5>
+
+        <div class="row g-3 mb-4">
+          <div class="col-md-7">
+            <label class="form-label">Item</label>
+            <select [(ngModel)]="novoItem.itemId" class="form-select">
+              <option value="">Selecione um item</option>
+              <option *ngFor="let item of itensDisponiveis" [value]="item.id">
+                {{ item.descricao }} - {{ item.valor | currency:'BRL' }}
+              </option>
+            </select>
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label">Quantidade</label>
+            <input
+              type="number"
+              min="1"
+              [(ngModel)]="novoItem.quantidade"
+              class="form-control"
+            >
+          </div>
+
+          <div class="col-md-2 d-flex align-items-end">
+            <button class="btn btn-success w-100" (click)="adicionarItem()">
+              Adicionar
+            </button>
+          </div>
+        </div>
+
+        <h5 class="fw-semibold mb-3">Itens da ordem</h5>
+
+        <div class="table-responsive" *ngIf="ordemSelecionada.itens?.length > 0; else semItens">
+          <table class="table align-middle table-hover">
+            <thead class="table-light">
+              <tr>
+                <th>Item ID</th>
+                <th>Quantidade</th>
+                <th>Valor Unitário</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of ordemSelecionada.itens">
+                <td>#{{ item.itemId }}</td>
+                <td>{{ item.quantidade }}</td>
+                <td>{{ item.valor | currency:'BRL' }}</td>
+                <td>{{ item.valor * item.quantidade | currency:'BRL' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <ng-template #semItens>
+          <div class="text-center py-4 text-muted">
+            <p class="mb-0">Nenhum item adicionado nesta ordem ainda.</p>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+</div>

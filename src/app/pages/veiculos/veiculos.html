@@ -1,0 +1,132 @@
+<a routerLink="/itens" class="btn btn-outline-secondary">Itens</a>
+<a routerLink="/ordens-servico" class="btn btn-outline-secondary">Ordens</a>
+
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1 class="fw-bold mb-1">Veículos</h1>
+      <p class="text-muted mb-0">Gerencie os veículos da oficina</p>
+    </div>
+
+    <div class="d-flex gap-2">
+      <a routerLink="/clientes" class="btn btn-outline-secondary">Clientes</a>
+      <button class="btn btn-outline-danger" (click)="logout()">Sair</button>
+    </div>
+  </div>
+
+  <div *ngIf="erro" class="alert alert-danger shadow-sm">
+    {{ erro }}
+  </div>
+
+  <div *ngIf="sucesso" class="alert alert-success shadow-sm">
+    {{ sucesso }}
+  </div>
+
+  <div class="row g-4">
+    <div class="col-lg-4">
+      <div class="card shadow-sm border-0 rounded-4">
+        <div class="card-body p-4">
+          <h4 class="fw-semibold mb-3">
+            {{ editando ? 'Editar veículo' : 'Novo veículo' }}
+          </h4>
+
+          <div class="mb-3">
+            <label class="form-label">Cliente</label>
+            <select [(ngModel)]="novoVeiculo.clienteId" class="form-select">
+              <option value="">Selecione um cliente</option>
+              <option *ngFor="let cliente of clientes" [value]="cliente.id">
+                {{ cliente.nome }}
+              </option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Placa</label>
+            <input [(ngModel)]="novoVeiculo.placa" class="form-control" placeholder="ABC1D23">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Marca</label>
+            <input [(ngModel)]="novoVeiculo.marca" class="form-control" placeholder="Marca">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Modelo</label>
+            <input [(ngModel)]="novoVeiculo.modelo" class="form-control" placeholder="Modelo">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Ano</label>
+            <input [(ngModel)]="novoVeiculo.ano" type="number" class="form-control" placeholder="Ano">
+          </div>
+
+          <div class="d-flex gap-2">
+            <button class="btn btn-primary w-100" *ngIf="!editando" (click)="criarVeiculo()">
+              Cadastrar
+            </button>
+
+            <button class="btn btn-success w-100" *ngIf="editando" (click)="salvarEdicao()">
+              Salvar
+            </button>
+
+            <button class="btn btn-secondary" *ngIf="editando" (click)="cancelarEdicao()">
+              Cancelar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-8">
+      <div class="card shadow-sm border-0 rounded-4">
+        <div class="card-body p-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="fw-semibold mb-0">Lista de veículos</h4>
+            <span class="badge text-bg-dark">{{ veiculos.length }} veículos</span>
+          </div>
+
+          <div class="table-responsive" *ngIf="veiculos.length > 0; else semVeiculos">
+            <table class="table align-middle table-hover">
+              <thead class="table-light">
+                <tr>
+                  <th>Cliente</th>
+                  <th>Placa</th>
+                  <th>Marca</th>
+                  <th>Modelo</th>
+                  <th>Ano</th>
+                  <th class="text-center">Ações</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let veiculo of veiculos">
+                  <td>{{ nomeCliente(veiculo.clienteId) }}</td>
+                  <td class="fw-medium">{{ veiculo.placa }}</td>
+                  <td>{{ veiculo.marca }}</td>
+                  <td>{{ veiculo.modelo }}</td>
+                  <td>{{ veiculo.ano }}</td>
+                  <td class="text-center">
+                    <div class="d-flex justify-content-center gap-2">
+                      <button class="btn btn-sm btn-warning" (click)="editarVeiculo(veiculo)">
+                        Editar
+                      </button>
+                      <button class="btn btn-sm btn-danger" (click)="deletarVeiculo(veiculo.id)">
+                        Excluir
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <ng-template #semVeiculos>
+            <div class="text-center py-5 text-muted">
+              <h5 class="mb-2">Nenhum veículo cadastrado</h5>
+              <p class="mb-0">Cadastre o primeiro veículo usando o formulário ao lado.</p>
+            </div>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

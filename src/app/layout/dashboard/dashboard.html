@@ -1,0 +1,31 @@
+<div class="d-flex">
+  
+  <!-- SIDEBAR -->
+  <div class="sidebar bg-dark text-white p-3">
+    <h4 class="fw-bold mb-4">Oficina</h4>
+
+    <ul class="nav flex-column gap-2">
+      <li>
+        <a routerLink="/clientes" routerLinkActive="active-link" class="nav-link text-white">Clientes</a>
+        <a routerLink="/veiculos" routerLinkActive="active-link" class="nav-link text-white">Veículos</a>
+        <a routerLink="/itens" routerLinkActive="active-link" class="nav-link text-white">Itens</a>
+        <a routerLink="/ordens-servico" routerLinkActive="active-link" class="nav-link text-white">Ordens</a>
+      </li>
+    </ul>
+
+    <div class="mt-auto pt-4">
+      <button class="btn btn-outline-light w-100" (click)="logout()">
+        Sair
+      </button>
+    </div>
+  </div>
+
+  <!-- CONTEÚDO -->
+  <div class="content flex-grow-1 p-4 bg-light min-vh-100">
+    <router-outlet></router-outlet>
+  </div>
+
+</div>
+<a routerLink="/" routerLinkActive="active-link" class="nav-link text-white">
+  Dashboard
+</a>

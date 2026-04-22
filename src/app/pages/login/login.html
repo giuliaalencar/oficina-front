@@ -1,0 +1,42 @@
+<div class="container min-vh-100 d-flex align-items-center justify-content-center">
+  <div class="row w-100 justify-content-center">
+    <div class="col-md-5 col-lg-4">
+      <div class="card shadow border-0 rounded-4">
+        <div class="card-body p-4">
+          <div class="text-center mb-4">
+            <h1 class="fw-bold mb-2">OficinaFront</h1>
+            <p class="text-muted mb-0">Entre para acessar o sistema</p>
+          </div>
+
+          <div *ngIf="erro" class="alert alert-danger">
+            {{ erro }}
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input
+              [(ngModel)]="email"
+              type="email"
+              class="form-control"
+              placeholder="Digite seu email"
+            >
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Senha</label>
+            <input
+              [(ngModel)]="senha"
+              type="password"
+              class="form-control"
+              placeholder="Digite sua senha"
+            >
+          </div>
+
+          <button class="btn btn-primary w-100" (click)="entrar()">
+            Entrar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
