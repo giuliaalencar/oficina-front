@@ -8,7 +8,7 @@ import { isPlatformBrowser } from '@angular/common';
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'https://localhost:44391/api/auth';
+  private apiUrl = 'https://oficina-api-9.onrender.com/api/auth';
   private platformId = inject(PLATFORM_ID);
 
   constructor(private http: HttpClient, private router: Router) {}

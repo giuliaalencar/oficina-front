@@ -15,8 +15,8 @@ export interface OrdemServico {
   providedIn: 'root'
 })
 export class OrdensServicoService {
-  private apiUrl = 'https://localhost:44391/api/ordens-servico';
-  private veiculosUrl = 'https://localhost:44391/api/veiculos';
+private apiUrl = 'https://oficina-api-9.onrender.com/api/ordens-servico';
+private veiculosUrl = 'https://oficina-api-9.onrender.com/api/veiculos';
 
   constructor(private http: HttpClient) {}
 
@@ -45,6 +45,6 @@ getOrdemById(id: number) {
 }
 
 getItensDisponiveis() {
-  return this.http.get<any[]>('https://localhost:44391/api/itens');
+  return this.http.get<any[]>('https://oficina-api-9.onrender.com/api/itens');
 }
 }

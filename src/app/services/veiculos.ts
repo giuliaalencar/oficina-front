@@ -15,8 +15,8 @@ export interface Veiculo {
   providedIn: 'root'
 })
 export class VeiculosService {
-  private apiUrl = 'https://localhost:44391/api/veiculos';
-  private clientesUrl = 'https://localhost:44391/api/clientes';
+  private apiUrl = 'https://oficina-api-9.onrender.com/api/veiculos';
+private clientesUrl = 'https://oficina-api-9.onrender.com/api/clientes';
 
   constructor(private http: HttpClient) {}
 
