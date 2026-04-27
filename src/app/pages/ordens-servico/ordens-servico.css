@@ -36,3 +36,54 @@ table td {
   font-size: 2rem;
   line-height: 1;
 }
+
+.nav-tabs {
+  border-bottom: 1px solid #e8dff2;
+  gap: 8px;
+}
+
+.nav-tabs .nav-item {
+  margin-bottom: -1px;
+}
+
+.nav-tabs .nav-link {
+  color: #5b21b6;
+  font-weight: 700;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  background: transparent;
+  border-radius: 10px 10px 0 0;
+  padding: 10px 14px;
+}
+
+.nav-tabs .nav-link:hover {
+  color: #db2777;
+  background: #fbf7ff;
+}
+
+.nav-tabs .nav-link.active {
+  color: #db2777;
+  border-bottom-color: #db2777;
+  background: #fff;
+}
+
+.metric-card {
+  border: 1px solid #e8dff2;
+  background: linear-gradient(135deg, #ffffff, #fbf7ff);
+}
+
+.metric-card .card-body {
+  display: grid;
+  gap: 8px;
+}
+
+.metric-card span {
+  color: #6b6472;
+  font-weight: 700;
+}
+
+.metric-card strong {
+  color: #6d28d9;
+  font-size: 2rem;
+  line-height: 1;
+}

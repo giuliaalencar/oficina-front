@@ -1,19 +1,19 @@
 <div class="container py-4">
   <div class="page-header">
-    <div>
+    <div class="page-title">
       <h1 class="fw-bold mb-1">Ordens de Serviço</h1>
       <p class="text-muted mb-0">Gerencie o fluxo da oficina</p>
     </div>
-    <svg class="page-illustration" viewBox="0 0 220 150" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect x="20" y="70" width="160" height="42" rx="18" fill="#0d6efd"/>
-  <rect x="50" y="46" width="76" height="34" rx="12" fill="#8ec5ff"/>
-  <circle cx="58" cy="116" r="15" fill="#1f2937"/>
-  <circle cx="145" cy="116" r="15" fill="#1f2937"/>
-  <circle cx="58" cy="116" r="6" fill="#f8fafc"/>
-  <circle cx="145" cy="116" r="6" fill="#f8fafc"/>
-  <path d="M165 38l9 9 20-22" stroke="#22c55e" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>
 
+    <svg class="page-illustration" viewBox="0 0 220 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="20" y="70" width="160" height="42" rx="18" fill="#8b5cf6"/>
+      <rect x="50" y="46" width="76" height="34" rx="12" fill="#f9a8d4"/>
+      <circle cx="58" cy="116" r="15" fill="#1f2937"/>
+      <circle cx="145" cy="116" r="15" fill="#1f2937"/>
+      <circle cx="58" cy="116" r="6" fill="#f8fafc"/>
+      <circle cx="145" cy="116" r="6" fill="#f8fafc"/>
+      <path d="M165 38l9 9 20-22" stroke="#22c55e" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
 
     <div class="d-flex gap-2">
       <a routerLink="/clientes" class="btn btn-outline-secondary">Clientes</a>
@@ -24,44 +24,41 @@
   </div>
 
   <div id="alerta-ordens" *ngIf="erro" class="alert alert-danger shadow-sm">
-  {{ erro }}
-</div>
-
-
+    {{ erro }}
+  </div>
 
   <div *ngIf="sucesso" class="alert alert-success shadow-sm">
     {{ sucesso }}
   </div>
 
   <div class="row g-3 mb-4" *ngIf="resumo">
-  <div class="col-md-4">
-    <div class="card metric-card">
-      <div class="card-body">
-        <span>Total de OS</span>
-        <strong>{{ resumo.totalOrdens }}</strong>
+    <div class="col-md-4">
+      <div class="card metric-card">
+        <div class="card-body">
+          <span>Total de OS</span>
+          <strong>{{ resumo.totalOrdens }}</strong>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card metric-card">
+        <div class="card-body">
+          <span>Finalizadas</span>
+          <strong>{{ resumo.ordensFinalizadas }}</strong>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card metric-card">
+        <div class="card-body">
+          <span>Tempo médio</span>
+          <strong>{{ resumo.tempoMedioHoras }}h</strong>
+        </div>
       </div>
     </div>
   </div>
-
-  <div class="col-md-4">
-    <div class="card metric-card">
-      <div class="card-body">
-        <span>Finalizadas</span>
-        <strong>{{ resumo.ordensFinalizadas }}</strong>
-      </div>
-    </div>
-  </div>
-
-  <div class="col-md-4">
-    <div class="card metric-card">
-      <div class="card-body">
-        <span>Tempo médio</span>
-        <strong>{{ resumo.tempoMedioHoras }}h</strong>
-      </div>
-    </div>
-  </div>
-</div>
-
 
   <div class="row g-4">
     <div class="col-lg-4">
@@ -106,6 +103,7 @@
                   <th class="text-center">Ações</th>
                 </tr>
               </thead>
+
               <tbody>
                 <tr *ngFor="let ordem of ordens">
                   <td>#{{ ordem.id }}</td>
@@ -117,10 +115,7 @@
                   <td>{{ ordem.valorTotal | currency:'BRL' }}</td>
                   <td class="text-center">
                     <div class="d-flex justify-content-center gap-2 flex-wrap">
-                      <button
-                        class="btn btn-sm btn-primary"
-                        (click)="selecionarOrdem(ordem)"
-                      >
+                      <button class="btn btn-sm btn-primary" (click)="selecionarOrdem(ordem)">
                         Ver detalhes
                       </button>
 
@@ -157,78 +152,132 @@
           <span class="badge text-bg-secondary">{{ ordemSelecionada.status }}</span>
         </div>
 
-        <div class="row mb-4">
-          <div class="col-md-6">
-            <p class="mb-1"><strong>Veículo:</strong> {{ nomeVeiculo(ordemSelecionada.veiculoId) }}</p>
-            <p class="mb-1"><strong>Data:</strong> {{ ordemSelecionada.dataEntrada | date:'short' }}</p>
-          </div>
-
-          <div class="col-md-6 text-md-end">
-            <p class="mb-1"><strong>Valor total:</strong></p>
-            <h4 class="fw-bold text-success">{{ ordemSelecionada.valorTotal | currency:'BRL' }}</h4>
-          </div>
-        </div>
-
-        <hr>
-
-        <h5 class="fw-semibold mb-3">Adicionar item</h5>
-
-        <div class="row g-3 mb-4">
-          <div class="col-md-7">
-            <label class="form-label">Item</label>
-            <select [(ngModel)]="novoItem.itemId" class="form-select">
-              <option value="">Selecione um item</option>
-              <option *ngFor="let item of itensDisponiveis" [value]="item.id">
-                {{ item.descricao }} - {{ item.valor | currency:'BRL' }}
-              </option>
-            </select>
-          </div>
-
-          <div class="col-md-3">
-            <label class="form-label">Quantidade</label>
-            <input
-              type="number"
-              min="1"
-              [(ngModel)]="novoItem.quantidade"
-              class="form-control"
-            >
-          </div>
-
-          <div class="col-md-2 d-flex align-items-end">
-            <button class="btn btn-success w-100" (click)="adicionarItem()">
-              Adicionar
+        <ul class="nav nav-tabs mb-4">
+          <li class="nav-item">
+            <button class="nav-link" [class.active]="abaAtiva === 'dados'" (click)="abaAtiva = 'dados'">
+              Dados Gerais
             </button>
+          </li>
+
+          <li class="nav-item">
+            <button class="nav-link" [class.active]="abaAtiva === 'servicos'" (click)="abaAtiva = 'servicos'">
+              Serviços
+            </button>
+          </li>
+
+          <li class="nav-item">
+            <button class="nav-link" [class.active]="abaAtiva === 'pecas'" (click)="abaAtiva = 'pecas'">
+              Peças
+            </button>
+          </li>
+
+          <li class="nav-item">
+            <button class="nav-link" [class.active]="abaAtiva === 'resumo'" (click)="abaAtiva = 'resumo'">
+              Resumo
+            </button>
+          </li>
+        </ul>
+
+        <div *ngIf="abaAtiva === 'dados'">
+          <div class="row mb-4">
+            <div class="col-md-6">
+              <p class="mb-1"><strong>Veículo:</strong> {{ nomeVeiculo(ordemSelecionada.veiculoId) }}</p>
+              <p class="mb-1"><strong>Data:</strong> {{ ordemSelecionada.dataEntrada | date:'short' }}</p>
+              <p class="mb-1"><strong>Status:</strong> {{ ordemSelecionada.status }}</p>
+            </div>
+
+            <div class="col-md-6 text-md-end">
+              <p class="mb-1"><strong>Valor total:</strong></p>
+              <h4 class="fw-bold text-success">{{ ordemSelecionada.valorTotal | currency:'BRL' }}</h4>
+            </div>
           </div>
         </div>
 
-        <h5 class="fw-semibold mb-3">Itens da ordem</h5>
+        <div *ngIf="abaAtiva === 'servicos'">
+          <h5 class="fw-semibold mb-3">Adicionar serviço</h5>
 
-        <div class="table-responsive" *ngIf="(ordemSelecionada.itens?.length || 0) > 0; else semItens">
-          <table class="table align-middle table-hover">
-            <thead class="table-light">
-              <tr>
-                <th>Item ID</th>
-                <th>Quantidade</th>
-                <th>Valor Unitário</th>
-                <th>Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let item of ordemSelecionada.itens">
-                <td>#{{ item.itemId }}</td>
-                <td>{{ item.quantidade }}</td>
-                <td>{{ item.valor | currency:'BRL' }}</td>
-                <td>{{ item.valor * item.quantidade | currency:'BRL' }}</td>
-              </tr>
-            </tbody>
-          </table>
+          <div class="row g-3 mb-4">
+            <div class="col-md-7">
+              <label class="form-label">Serviço</label>
+              <select [(ngModel)]="novoItem.itemId" class="form-select">
+                <option value="">Selecione um serviço</option>
+                <option *ngFor="let item of itensServico()" [value]="item.id">
+                  {{ item.descricao }} - {{ item.valor | currency:'BRL' }}
+                </option>
+              </select>
+            </div>
+
+            <div class="col-md-3">
+              <label class="form-label">Quantidade</label>
+              <input type="number" min="1" [(ngModel)]="novoItem.quantidade" class="form-control">
+            </div>
+
+            <div class="col-md-2 d-flex align-items-end">
+              <button class="btn btn-success w-100" (click)="adicionarItem()">
+                Adicionar
+              </button>
+            </div>
+          </div>
         </div>
 
-        <ng-template #semItens>
-          <div class="text-center py-4 text-muted">
-            <p class="mb-0">Nenhum item adicionado nesta ordem ainda.</p>
+        <div *ngIf="abaAtiva === 'pecas'">
+          <h5 class="fw-semibold mb-3">Adicionar peça</h5>
+
+          <div class="row g-3 mb-4">
+            <div class="col-md-7">
+              <label class="form-label">Peça</label>
+              <select [(ngModel)]="novoItem.itemId" class="form-select">
+                <option value="">Selecione uma peça</option>
+                <option *ngFor="let item of itensPeca()" [value]="item.id">
+                  {{ item.descricao }} - {{ item.valor | currency:'BRL' }} | Estoque: {{ item.estoque }}
+                </option>
+              </select>
+            </div>
+
+            <div class="col-md-3">
+              <label class="form-label">Quantidade</label>
+              <input type="number" min="1" [(ngModel)]="novoItem.quantidade" class="form-control">
+            </div>
+
+            <div class="col-md-2 d-flex align-items-end">
+              <button class="btn btn-success w-100" (click)="adicionarItem()">
+                Adicionar
+              </button>
+            </div>
           </div>
-        </ng-template>
+        </div>
+
+        <div *ngIf="abaAtiva === 'resumo'">
+          <h5 class="fw-semibold mb-3">Itens da ordem</h5>
+
+          <div class="table-responsive" *ngIf="(ordemSelecionada.itens?.length || 0) > 0; else semItens">
+            <table class="table align-middle table-hover">
+              <thead class="table-light">
+                <tr>
+                  <th>Item ID</th>
+                  <th>Quantidade</th>
+                  <th>Valor Unitário</th>
+                  <th>Total</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                <tr *ngFor="let item of ordemSelecionada.itens">
+                  <td>#{{ item.itemId }}</td>
+                  <td>{{ item.quantidade }}</td>
+                  <td>{{ item.valor | currency:'BRL' }}</td>
+                  <td>{{ item.valor * item.quantidade | currency:'BRL' }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <ng-template #semItens>
+            <div class="text-center py-4 text-muted">
+              <p class="mb-0">Nenhum item adicionado nesta ordem ainda.</p>
+            </div>
+          </ng-template>
+        </div>
       </div>
     </div>
   </div>

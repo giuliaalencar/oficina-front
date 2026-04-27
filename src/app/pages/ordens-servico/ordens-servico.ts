@@ -16,6 +16,7 @@ export class OrdensServicoComponent implements OnInit {
   veiculos: any[] = [];
   itensDisponiveis: any[] = [];
   ordemSelecionada: OrdemServico | null = null;
+  abaAtiva = 'dados';
   resumo: ResumoOrdens | null = null;
 
   erro = '';
@@ -231,6 +232,15 @@ export class OrdensServicoComponent implements OnInit {
 
     return fluxo[statusAtual] || null;
   }
+
+  itensPeca() {
+  return this.itensDisponiveis.filter(item => item.tipo === 'Peca');
+}
+
+itensServico() {
+  return this.itensDisponiveis.filter(item => item.tipo !== 'Peca');
+}
+
 
   logout() {
     localStorage.removeItem('token');
