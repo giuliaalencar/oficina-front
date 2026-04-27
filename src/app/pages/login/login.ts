@@ -28,9 +28,21 @@ export class LoginComponent {
         this.router.navigate(['/clientes']);
       },
       error: (err) => {
-        console.log('ERRO LOGIN:', err);
-        this.erro = JSON.stringify(err);
-      }
+  console.log('ERRO LOGIN:', err);
+
+  if (err.status === 0) {
+    this.erro = 'Não foi possível conectar à API. Aguarde alguns segundos e tente novamente.';
+    return;
+  }
+
+  if (typeof err?.error === 'string') {
+    this.erro = err.error;
+    return;
+  }
+
+  this.erro = 'Email ou senha inválidos.';
+}
+
     });
   }
 }
