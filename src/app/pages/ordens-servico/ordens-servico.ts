@@ -2,7 +2,7 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { OrdensServicoService, OrdemServico } from '../../services/ordens-servico';
+import { OrdensServicoService, OrdemServico, ResumoOrdens } from '../../services/ordens-servico';
 
 @Component({
   selector: 'app-ordens-servico',
@@ -16,6 +16,7 @@ export class OrdensServicoComponent implements OnInit {
   veiculos: any[] = [];
   itensDisponiveis: any[] = [];
   ordemSelecionada: OrdemServico | null = null;
+  resumo: ResumoOrdens | null = null;
 
   erro = '';
   sucesso = '';
@@ -37,10 +38,25 @@ export class OrdensServicoComponent implements OnInit {
 
 
   ngOnInit(): void {
-    this.carregarOrdens();
-    this.carregarVeiculos();
-    this.carregarItens();
-  }
+  this.carregarResumo();
+  this.carregarOrdens();
+  this.carregarVeiculos();
+  this.carregarItens();
+}
+
+  carregarResumo() {
+  this.ordensService.getResumo().subscribe({
+    next: (res) => {
+      this.resumo = res;
+      this.cdr.detectChanges();
+    },
+    error: (err) => {
+      console.log(err);
+      this.cdr.detectChanges();
+    }
+  });
+}
+
 
   carregarOrdens() {
     this.ordensService.getOrdens().subscribe({
@@ -152,6 +168,7 @@ export class OrdensServicoComponent implements OnInit {
     next: () => {
       this.sucesso = 'Status atualizado com sucesso!';
       this.carregarOrdens();
+      this.carregarResumo();
 
       if (this.ordemSelecionada && this.ordemSelecionada.id === ordem.id) {
         this.selecionarOrdem(ordem);

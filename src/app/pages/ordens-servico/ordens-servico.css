@@ -16,3 +16,23 @@ table th,
 table td {
   vertical-align: middle;
 }
+.metric-card {
+  border: 1px solid #e8dff2;
+  background: linear-gradient(135deg, #ffffff, #fbf7ff);
+}
+
+.metric-card .card-body {
+  display: grid;
+  gap: 8px;
+}
+
+.metric-card span {
+  color: #6b6472;
+  font-weight: 700;
+}
+
+.metric-card strong {
+  color: #6d28d9;
+  font-size: 2rem;
+  line-height: 1;
+}

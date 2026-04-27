@@ -11,6 +11,12 @@ export interface OrdemServico {
   itens: any[];
 }
 
+export interface ResumoOrdens {
+  totalOrdens: number;
+  ordensFinalizadas: number;
+  tempoMedioHoras: number;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -22,6 +28,10 @@ export class OrdensServicoService {
   private itensUrl = `${this.apiBase}/itens`;
 
   constructor(private http: HttpClient) {}
+
+  getResumo() {
+  return this.http.get<ResumoOrdens>(`${this.ordensUrl}/resumo`);
+}
 
   getOrdens(): Observable<OrdemServico[]> {
     return this.http.get<OrdemServico[]>(this.ordensUrl);
