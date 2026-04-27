@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -25,9 +25,11 @@ export class ItensComponent implements OnInit {
   };
 
   constructor(
-    private router: Router,
-    private itensService: ItensService
-  ) {}
+  private router: Router,
+  private itensService: ItensService,
+  private cdr: ChangeDetectorRef
+) {}
+
 
   ngOnInit(): void {
     this.carregarItens();
@@ -35,7 +37,10 @@ export class ItensComponent implements OnInit {
 
   carregarItens() {
     this.itensService.getItens().subscribe({
-      next: (res) => this.itens = res,
+      next: (res) => {
+        this.itens = res;
+        this.cdr.detectChanges();
+      },
       error: (err) => {
         console.log(err);
         this.erro = 'Erro ao carregar itens';

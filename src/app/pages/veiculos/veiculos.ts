@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -27,9 +27,11 @@ export class VeiculosComponent implements OnInit {
   };
 
   constructor(
-    private router: Router,
-    private veiculosService: VeiculosService
-  ) {}
+  private router: Router,
+  private veiculosService: VeiculosService,
+  private cdr: ChangeDetectorRef
+) {}
+
 
   ngOnInit(): void {
     this.carregarVeiculos();
@@ -37,27 +39,32 @@ export class VeiculosComponent implements OnInit {
   }
 
   carregarVeiculos() {
-    this.veiculosService.getVeiculos().subscribe({
-      next: (res) => {
-        this.veiculos = res;
-      },
-      error: (err) => {
-        console.log(err);
-        this.erro = 'Erro ao carregar veículos';
-      }
-    });
-  }
+  this.veiculosService.getVeiculos().subscribe({
+    next: (res) => {
+      this.veiculos = res;
+      this.cdr.detectChanges();
+    },
+    error: (err) => {
+      console.log(err);
+      this.erro = 'Erro ao carregar veículos';
+      this.cdr.detectChanges();
+    }
+  });
+}
 
-  carregarClientes() {
-    this.veiculosService.getClientes().subscribe({
-      next: (res) => {
-        this.clientes = res;
-      },
-      error: (err) => {
-        console.log(err);
-      }
-    });
-  }
+carregarClientes() {
+  this.veiculosService.getClientes().subscribe({
+    next: (res) => {
+      this.clientes = res;
+      this.cdr.detectChanges();
+    },
+    error: (err) => {
+      console.log(err);
+      this.cdr.detectChanges();
+    }
+  });
+}
+
 
   criarVeiculo() {
     this.erro = '';

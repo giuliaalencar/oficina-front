@@ -1,9 +1,19 @@
 <div class="container py-4">
-  <div class="d-flex justify-content-between align-items-center mb-4">
+  <div class="page-header">
     <div>
       <h1 class="fw-bold mb-1">Ordens de Serviço</h1>
       <p class="text-muted mb-0">Gerencie o fluxo da oficina</p>
     </div>
+    <svg class="page-illustration" viewBox="0 0 220 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect x="20" y="70" width="160" height="42" rx="18" fill="#0d6efd"/>
+  <rect x="50" y="46" width="76" height="34" rx="12" fill="#8ec5ff"/>
+  <circle cx="58" cy="116" r="15" fill="#1f2937"/>
+  <circle cx="145" cy="116" r="15" fill="#1f2937"/>
+  <circle cx="58" cy="116" r="6" fill="#f8fafc"/>
+  <circle cx="145" cy="116" r="6" fill="#f8fafc"/>
+  <path d="M165 38l9 9 20-22" stroke="#22c55e" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+
 
     <div class="d-flex gap-2">
       <a routerLink="/clientes" class="btn btn-outline-secondary">Clientes</a>
@@ -13,9 +23,11 @@
     </div>
   </div>
 
-  <div *ngIf="erro" class="alert alert-danger shadow-sm">
-    {{ erro }}
-  </div>
+  <div id="alerta-ordens" *ngIf="erro" class="alert alert-danger shadow-sm">
+  {{ erro }}
+</div>
+
+
 
   <div *ngIf="sucesso" class="alert alert-success shadow-sm">
     {{ sucesso }}

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -26,9 +26,11 @@ export class ClientesComponent implements OnInit {
   };
 
   constructor(
-    private router: Router,
-    private clientesService: ClientesService
-  ) {}
+  private router: Router,
+  private clientesService: ClientesService,
+  private cdr: ChangeDetectorRef
+) {}
+
 
   ngOnInit(): void {
     this.carregarClientes();
@@ -38,6 +40,7 @@ export class ClientesComponent implements OnInit {
     this.clientesService.getClientes().subscribe({
       next: (res) => {
         this.clientes = res;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.log('ERRO CLIENTES:', err);

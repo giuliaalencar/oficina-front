@@ -1,41 +1,41 @@
-<div class="d-flex">
-  <div class="sidebar bg-dark text-white p-3">
-    <h4 class="fw-bold mb-4">Oficina</h4>
-
-    <ul class="nav flex-column gap-2">
-      <li>
-        <a routerLink="/clientes" routerLinkActive="active-link" class="nav-link text-white">
-          Clientes
-        </a>
-      </li>
-
-      <li>
-        <a routerLink="/veiculos" routerLinkActive="active-link" class="nav-link text-white">
-          Veículos
-        </a>
-      </li>
-
-      <li>
-        <a routerLink="/itens" routerLinkActive="active-link" class="nav-link text-white">
-          Itens
-        </a>
-      </li>
-
-      <li>
-        <a routerLink="/ordens-servico" routerLinkActive="active-link" class="nav-link text-white">
-          Ordens
-        </a>
-      </li>
-    </ul>
-
-    <div class="mt-4">
-      <button class="btn btn-outline-light w-100" (click)="logout()">
-        Sair
-      </button>
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-icon">OF</div>
+      <div>
+        <h4>Oficina</h4>
+        <span>Gestão de serviços</span>
+      </div>
     </div>
-  </div>
 
-  <main class="content flex-grow-1 p-4 bg-light min-vh-100">
+    <nav class="menu">
+      <a routerLink="/clientes" routerLinkActive="active-link">
+        <span>👤</span>
+        Clientes
+      </a>
+
+      <a routerLink="/veiculos" routerLinkActive="active-link">
+        <span>🚗</span>
+        Veículos
+      </a>
+
+      <a routerLink="/itens" routerLinkActive="active-link">
+        <span>🧰</span>
+        Itens
+      </a>
+
+      <a routerLink="/ordens-servico" routerLinkActive="active-link">
+        <span>📝</span>
+        Ordens
+      </a>
+    </nav>
+
+    <button class="logout-btn" type="button" (click)="logout()">
+      Sair
+    </button>
+  </aside>
+
+  <main class="content">
     <router-outlet></router-outlet>
   </main>
 </div>

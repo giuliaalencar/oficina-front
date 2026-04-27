@@ -1,27 +1,43 @@
 import { Routes } from '@angular/router';
-import { LoginComponent } from './pages/login/login';
-import { ClientesComponent } from './pages/clientes/clientes';
-import { VeiculosComponent } from './pages/veiculos/veiculos';
-import { ItensComponent } from './pages/itens/itens';
-import { OrdensServicoComponent } from './pages/ordens-servico/ordens-servico';
-import { DashboardComponent } from './layout/dashboard/dashboard';
 import { authGuard } from './guards/auth-guard';
 
 export const routes: Routes = [
   {
     path: 'login',
-    component: LoginComponent
+    loadComponent: () =>
+      import('./pages/login/login').then(m => m.LoginComponent)
   },
   {
     path: '',
-    component: DashboardComponent,
+    loadComponent: () =>
+      import('./layout/dashboard/dashboard').then(m => m.DashboardComponent),
     canActivate: [authGuard],
     children: [
-      { path: 'clientes', component: ClientesComponent },
-      { path: 'veiculos', component: VeiculosComponent },
-      { path: 'itens', component: ItensComponent },
-      { path: 'ordens-servico', component: OrdensServicoComponent },
-      { path: '', redirectTo: 'clientes', pathMatch: 'full' }
+      {
+        path: 'clientes',
+        loadComponent: () =>
+          import('./pages/clientes/clientes').then(m => m.ClientesComponent)
+      },
+      {
+        path: 'veiculos',
+        loadComponent: () =>
+          import('./pages/veiculos/veiculos').then(m => m.VeiculosComponent)
+      },
+      {
+        path: 'itens',
+        loadComponent: () =>
+          import('./pages/itens/itens').then(m => m.ItensComponent)
+      },
+      {
+        path: 'ordens-servico',
+        loadComponent: () =>
+          import('./pages/ordens-servico/ordens-servico').then(m => m.OrdensServicoComponent)
+      },
+      {
+        path: '',
+        redirectTo: 'clientes',
+        pathMatch: 'full'
+      }
     ]
   },
   {

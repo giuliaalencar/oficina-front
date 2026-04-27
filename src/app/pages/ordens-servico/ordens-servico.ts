@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -30,9 +30,11 @@ export class OrdensServicoComponent implements OnInit {
   };
 
   constructor(
-    private router: Router,
-    private ordensService: OrdensServicoService
-  ) {}
+  private router: Router,
+  private ordensService: OrdensServicoService,
+  private cdr: ChangeDetectorRef
+) {}
+
 
   ngOnInit(): void {
     this.carregarOrdens();
@@ -44,6 +46,7 @@ export class OrdensServicoComponent implements OnInit {
     this.ordensService.getOrdens().subscribe({
       next: (res) => {
         this.ordens = res;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.log(err);
@@ -56,6 +59,7 @@ export class OrdensServicoComponent implements OnInit {
     this.ordensService.getVeiculos().subscribe({
       next: (res) => {
         this.veiculos = res;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.log(err);
@@ -68,6 +72,7 @@ export class OrdensServicoComponent implements OnInit {
     this.ordensService.getItensDisponiveis().subscribe({
       next: (res) => {
         this.itensDisponiveis = res;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.log(err);
@@ -102,6 +107,7 @@ export class OrdensServicoComponent implements OnInit {
     this.ordensService.getOrdemById(ordem.id).subscribe({
       next: (res) => {
         this.ordemSelecionada = res;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.log(err);
@@ -138,24 +144,53 @@ export class OrdensServicoComponent implements OnInit {
     });
   }
 
-  atualizarStatus(ordem: OrdemServico, novoStatus: string) {
-    this.erro = '';
-    this.sucesso = '';
+    atualizarStatus(ordem: OrdemServico, novoStatus: string) {
+  this.erro = '';
+  this.sucesso = '';
 
-    this.ordensService.atualizarStatus(ordem.id, novoStatus).subscribe({
-      next: () => {
-        this.sucesso = 'Status atualizado com sucesso!';
-        this.carregarOrdens();
+  this.ordensService.atualizarStatus(ordem.id, novoStatus).subscribe({
+    next: () => {
+      this.sucesso = 'Status atualizado com sucesso!';
+      this.carregarOrdens();
 
-        if (this.ordemSelecionada && this.ordemSelecionada.id === ordem.id) {
-          this.selecionarOrdem(ordem);
-        }
-      },
-      error: (err) => {
-        console.log(err);
-        this.erro = err?.error || 'Erro ao atualizar status';
+      if (this.ordemSelecionada && this.ordemSelecionada.id === ordem.id) {
+        this.selecionarOrdem(ordem);
       }
+    },
+    error: (err) => {
+      console.log(err);
+
+      if (typeof err?.error === 'string' && err.error.includes('ERR_003')) {
+        this.erro = 'Estoque indisponível para um ou mais itens desta ordem.';
+      } else if (typeof err?.error === 'string') {
+        this.erro = err.error;
+      } else {
+        this.erro = 'Erro ao atualizar status da ordem.';
+      }
+
+      setTimeout(() => {
+  if (typeof document !== 'undefined') {
+    document.getElementById('alerta-ordens')?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start'
     });
+  }
+}, 0);
+
+    }
+  });
+}
+
+
+  mostrarErro(mensagem: string) {
+    this.erro = mensagem;
+
+    setTimeout(() => {
+      document.getElementById('alerta-ordens')?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }, 50);
   }
 
   nomeVeiculo(veiculoId: string): string {
@@ -185,3 +220,5 @@ export class OrdensServicoComponent implements OnInit {
     this.router.navigate(['/login']);
   }
 }
+
+
