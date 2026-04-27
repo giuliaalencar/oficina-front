@@ -15,28 +15,30 @@ export interface Veiculo {
   providedIn: 'root'
 })
 export class VeiculosService {
-  private apiUrl = 'https://oficina-api-9.onrender.com/api/veiculos';
-private clientesUrl = 'https://oficina-api-9.onrender.com/api/clientes';
+  private apiBase = 'https://oficina-api-10.onrender.com/api';
+
+  private veiculosUrl = `${this.apiBase}/veiculos`;
+  private clientesUrl = `${this.apiBase}/clientes`;
 
   constructor(private http: HttpClient) {}
 
   getVeiculos(): Observable<Veiculo[]> {
-    return this.http.get<Veiculo[]>(this.apiUrl);
-  }
-
-  criarVeiculo(veiculo: Omit<Veiculo, 'id'>): Observable<Veiculo> {
-    return this.http.post<Veiculo>(this.apiUrl, veiculo);
-  }
-
-  atualizarVeiculo(veiculo: Veiculo): Observable<Veiculo> {
-    return this.http.put<Veiculo>(`${this.apiUrl}/${veiculo.id}`, veiculo);
-  }
-
-  deletarVeiculo(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+    return this.http.get<Veiculo[]>(this.veiculosUrl);
   }
 
   getClientes(): Observable<any[]> {
     return this.http.get<any[]>(this.clientesUrl);
+  }
+
+  criarVeiculo(veiculo: Omit<Veiculo, 'id'>): Observable<Veiculo> {
+    return this.http.post<Veiculo>(this.veiculosUrl, veiculo);
+  }
+
+  atualizarVeiculo(veiculo: Veiculo): Observable<Veiculo> {
+    return this.http.put<Veiculo>(`${this.veiculosUrl}/${veiculo.id}`, veiculo);
+  }
+
+  deletarVeiculo(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.veiculosUrl}/${id}`);
   }
 }

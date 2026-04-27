@@ -6,7 +6,6 @@ import { ItensComponent } from './pages/itens/itens';
 import { OrdensServicoComponent } from './pages/ordens-servico/ordens-servico';
 import { DashboardComponent } from './layout/dashboard/dashboard';
 import { authGuard } from './guards/auth-guard';
-import { DashboardHomeComponent } from './pages/dashboard-home/dashboard-home';
 
 export const routes: Routes = [
   {
@@ -18,13 +17,15 @@ export const routes: Routes = [
     component: DashboardComponent,
     canActivate: [authGuard],
     children: [
-  { path: 'dashboard', component: DashboardHomeComponent },
-  { path: 'clientes', component: ClientesComponent },
-  { path: 'veiculos', component: VeiculosComponent },
-  { path: 'itens', component: ItensComponent },
-  { path: 'ordens-servico', component: OrdensServicoComponent },
-  { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
-]
-
+      { path: 'clientes', component: ClientesComponent },
+      { path: 'veiculos', component: VeiculosComponent },
+      { path: 'itens', component: ItensComponent },
+      { path: 'ordens-servico', component: OrdensServicoComponent },
+      { path: '', redirectTo: 'clientes', pathMatch: 'full' }
+    ]
+  },
+  {
+    path: '**',
+    redirectTo: ''
   }
 ];

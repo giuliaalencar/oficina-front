@@ -14,22 +14,45 @@ export interface OrdemServico {
 @Injectable({
   providedIn: 'root'
 })
-export class OrdensService {
+export class OrdensServicoService {
+  private apiBase = 'https://oficina-api-10.onrender.com/api';
 
-  private apiUrl = 'https://oficina-api-9.onrender.com/api/ordens-servico';
-  private veiculosUrl = 'https://oficina-api-9.onrender.com/api/veiculos';
+  private ordensUrl = `${this.apiBase}/ordens-servico`;
+  private veiculosUrl = `${this.apiBase}/veiculos`;
+  private itensUrl = `${this.apiBase}/itens`;
 
   constructor(private http: HttpClient) {}
 
   getOrdens(): Observable<OrdemServico[]> {
-    return this.http.get<OrdemServico[]>(this.apiUrl);
+    return this.http.get<OrdemServico[]>(this.ordensUrl);
   }
 
-  criarOrdem(payload: { veiculoId: string }) {
-    return this.http.post<OrdemServico>(this.apiUrl, payload);
+  getOrdemById(id: number): Observable<OrdemServico> {
+    return this.http.get<OrdemServico>(`${this.ordensUrl}/${id}`);
+  }
+
+  criarOrdem(payload: { veiculoId: string }): Observable<OrdemServico> {
+    return this.http.post<OrdemServico>(this.ordensUrl, payload);
   }
 
   getVeiculos(): Observable<any[]> {
     return this.http.get<any[]>(this.veiculosUrl);
+  }
+
+  getItensDisponiveis(): Observable<any[]> {
+    return this.http.get<any[]>(this.itensUrl);
+  }
+
+  addItem(ordemId: number, payload: { itemId: string; quantidade: number }) {
+    return this.http.post(`${this.ordensUrl}/${ordemId}/itens`, {
+      itemId: Number(payload.itemId),
+      quantidade: Number(payload.quantidade)
+    });
+  }
+
+  atualizarStatus(ordemId: number, status: string) {
+    return this.http.put(`${this.ordensUrl}/${ordemId}/status`, {
+      status
+    });
   }
 }

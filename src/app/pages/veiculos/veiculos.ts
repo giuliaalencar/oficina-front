@@ -1,15 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { VeiculosService, Veiculo } from '../../services/veiculos';
 
 @Component({
   selector: 'app-veiculos',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './veiculos.html',
-  styleUrl: './veiculos.css'
+  styleUrls: ['./veiculos.css']
 })
 export class VeiculosComponent implements OnInit {
   veiculos: Veiculo[] = [];
@@ -119,6 +119,9 @@ export class VeiculosComponent implements OnInit {
   }
 
   deletarVeiculo(id: string) {
+    this.erro = '';
+    this.sucesso = '';
+
     this.veiculosService.deletarVeiculo(id).subscribe({
       next: () => {
         this.sucesso = 'Veículo excluído com sucesso!';

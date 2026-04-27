@@ -14,7 +14,7 @@ export interface Item {
   providedIn: 'root'
 })
 export class ItensService {
-  private apiUrl = 'https://oficina-api-9.onrender.com/api/itens';
+  private apiUrl = 'https://oficina-api-10.onrender.com/api/itens';
 
   constructor(private http: HttpClient) {}
 
