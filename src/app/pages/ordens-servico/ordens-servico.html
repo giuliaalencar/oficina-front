@@ -74,6 +74,10 @@
                 {{ veiculo.placa }} - {{ veiculo.marca }} {{ veiculo.modelo }}
               </option>
             </select>
+
+            <div class="field-error" *ngIf="errosCampos['veiculoId']">
+              {{ errosCampos['veiculoId'] }}
+            </div>
           </div>
 
           <button class="btn btn-primary w-100" (click)="criarOrdem()">
@@ -205,11 +209,19 @@
                   {{ item.descricao }} - {{ item.valor | currency:'BRL' }}
                 </option>
               </select>
+
+              <div class="field-error" *ngIf="errosCampos['itemId'] && abaAtiva === 'servicos'">
+                {{ errosCampos['itemId'] }}
+              </div>
             </div>
 
             <div class="col-md-3">
               <label class="form-label">Quantidade</label>
               <input type="number" min="1" [(ngModel)]="novoItem.quantidade" class="form-control">
+
+              <div class="field-error" *ngIf="errosCampos['quantidade'] && abaAtiva === 'servicos'">
+                {{ errosCampos['quantidade'] }}
+              </div>
             </div>
 
             <div class="col-md-2 d-flex align-items-end">
@@ -232,11 +244,19 @@
                   {{ item.descricao }} - {{ item.valor | currency:'BRL' }} | Estoque: {{ item.estoque }}
                 </option>
               </select>
+
+              <div class="field-error" *ngIf="errosCampos['itemId'] && abaAtiva === 'pecas'">
+                {{ errosCampos['itemId'] }}
+              </div>
             </div>
 
             <div class="col-md-3">
               <label class="form-label">Quantidade</label>
               <input type="number" min="1" [(ngModel)]="novoItem.quantidade" class="form-control">
+
+              <div class="field-error" *ngIf="errosCampos['quantidade'] && abaAtiva === 'pecas'">
+                {{ errosCampos['quantidade'] }}
+              </div>
             </div>
 
             <div class="col-md-2 d-flex align-items-end">

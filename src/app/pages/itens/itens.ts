@@ -15,6 +15,7 @@ export class ItensComponent implements OnInit {
   itens: Item[] = [];
   erro = '';
   sucesso = '';
+  errosCampos: Record<string, string> = {};
   editando: Item | null = null;
 
   novoItem = {
@@ -35,6 +36,29 @@ export class ItensComponent implements OnInit {
     this.carregarItens();
   }
 
+  validarFormulario(): boolean {
+  this.errosCampos = {};
+
+  if (!this.novoItem.descricao.trim()) {
+    this.errosCampos['descricao'] = 'Informe a descrição do item.';
+  }
+
+  if (Number(this.novoItem.valor) <= 0) {
+    this.errosCampos['valor'] = 'Informe um valor maior que zero.';
+  }
+
+  if (Number(this.novoItem.estoque) < 0) {
+    this.errosCampos['estoque'] = 'O estoque não pode ser negativo.';
+  }
+
+  if (!this.novoItem.tipo) {
+    this.errosCampos['tipo'] = 'Selecione o tipo do item.';
+  }
+
+  return Object.keys(this.errosCampos).length === 0;
+}
+
+
   carregarItens() {
     this.itensService.getItens().subscribe({
       next: (res) => {
@@ -51,6 +75,10 @@ export class ItensComponent implements OnInit {
   criarItem() {
     this.erro = '';
     this.sucesso = '';
+    if (!this.validarFormulario()) {
+  return;
+}
+
 
     this.itensService.criarItem({
       ...this.novoItem,
@@ -81,6 +109,13 @@ export class ItensComponent implements OnInit {
 
   salvarEdicao() {
     if (!this.editando) return;
+    this.erro = '';
+this.sucesso = '';
+
+if (!this.validarFormulario()) {
+  return;
+}
+
 
     const itemAtualizado: Item = {
       ...this.editando,

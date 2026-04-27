@@ -39,21 +39,39 @@
             <label class="form-label">Nome</label>
             <input [(ngModel)]="novoCliente.nome" class="form-control" placeholder="Digite o nome">
           </div>
+          <div class="field-error" *ngIf="errosCampos['nome']">
+  {{ errosCampos['nome'] }}
+</div>
+
 
           <div class="mb-3">
             <label class="form-label">Email</label>
             <input [(ngModel)]="novoCliente.email" class="form-control" placeholder="Digite o email">
           </div>
 
+          <div class="field-error" *ngIf="errosCampos['email']">
+  {{ errosCampos['email'] }}
+</div>
+
+
           <div class="mb-3">
             <label class="form-label">Telefone</label>
             <input [(ngModel)]="novoCliente.telefone" class="form-control" placeholder="Digite o telefone">
           </div>
 
+          <div class="field-error" *ngIf="errosCampos['telefone']">
+  {{ errosCampos['telefone'] }}
+</div>
+
+
           <div class="mb-3">
             <label class="form-label">CPF/CNPJ</label>
             <input [(ngModel)]="novoCliente.cpfCnpj" class="form-control" placeholder="Digite o CPF/CNPJ">
           </div>
+          <div class="field-error" *ngIf="errosCampos['cpfCnpj']">
+  {{ errosCampos['cpfCnpj'] }}
+</div>
+
 
           <div class="d-flex gap-2">
             <button class="btn btn-primary w-100" *ngIf="!editando" (click)="criarCliente()">

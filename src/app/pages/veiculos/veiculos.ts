@@ -16,6 +16,7 @@ export class VeiculosComponent implements OnInit {
   clientes: any[] = [];
   erro = '';
   sucesso = '';
+  errosCampos: Record<string, string> = {};
   editando: Veiculo | null = null;
 
   novoVeiculo = {
@@ -37,6 +38,39 @@ export class VeiculosComponent implements OnInit {
     this.carregarVeiculos();
     this.carregarClientes();
   }
+
+  validarFormulario(): boolean {
+  this.errosCampos = {};
+
+  const placa = this.novoVeiculo.placa.trim().toUpperCase();
+  const placaAntiga = /^[A-Z]{3}[0-9]{4}$/;
+  const placaMercosul = /^[A-Z]{3}[0-9][A-Z][0-9]{2}$/;
+
+  if (!this.novoVeiculo.clienteId) {
+    this.errosCampos['clienteId'] = 'Selecione um cliente.';
+  }
+
+  if (!this.novoVeiculo.placa.trim()) {
+    this.errosCampos['placa'] = 'Informe a placa do veículo.';
+  } else if (!placaAntiga.test(placa) && !placaMercosul.test(placa)) {
+    this.errosCampos['placa'] = 'Formato de placa inválido.';
+  }
+
+  if (!this.novoVeiculo.marca.trim()) {
+    this.errosCampos['marca'] = 'Informe a marca do veículo.';
+  }
+
+  if (!this.novoVeiculo.modelo.trim()) {
+    this.errosCampos['modelo'] = 'Informe o modelo do veículo.';
+  }
+
+  if (!this.novoVeiculo.ano || Number(this.novoVeiculo.ano) <= 0) {
+    this.errosCampos['ano'] = 'Informe um ano válido.';
+  }
+
+  return Object.keys(this.errosCampos).length === 0;
+}
+
 
   carregarVeiculos() {
   this.veiculosService.getVeiculos().subscribe({
@@ -69,6 +103,10 @@ carregarClientes() {
   criarVeiculo() {
     this.erro = '';
     this.sucesso = '';
+    if (!this.validarFormulario()) {
+  return;
+}
+
 
     this.veiculosService.criarVeiculo({
       ...this.novoVeiculo,
@@ -80,9 +118,16 @@ carregarClientes() {
         this.carregarVeiculos();
       },
       error: (err) => {
-        console.log(err);
-        this.erro = err?.error || 'Erro ao cadastrar veículo';
-      }
+  console.log(err);
+
+  if (typeof err?.error === 'string' && err.error.includes('ERR_002')) {
+    this.errosCampos['placa'] = 'Formato de placa inválido.';
+    return;
+  }
+
+  this.erro = err?.error || 'Erro ao cadastrar veículo';
+}
+
     });
   }
 
@@ -99,6 +144,13 @@ carregarClientes() {
 
   salvarEdicao() {
     if (!this.editando) return;
+    this.erro = '';
+this.sucesso = '';
+
+if (!this.validarFormulario()) {
+  return;
+}
+
 
     const veiculoAtualizado: Veiculo = {
       ...this.editando,
@@ -114,9 +166,16 @@ carregarClientes() {
         this.carregarVeiculos();
       },
       error: (err) => {
-        console.log(err);
-        this.erro = err?.error || 'Erro ao atualizar veículo';
-      }
+  console.log(err);
+
+  if (typeof err?.error === 'string' && err.error.includes('ERR_002')) {
+    this.errosCampos['placa'] = 'Formato de placa inválido.';
+    return;
+  }
+
+  this.erro = err?.error || 'Erro ao atualizar veículo';
+}
+
     });
   }
 

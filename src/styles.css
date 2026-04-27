@@ -210,3 +210,10 @@ body {
   height: auto !important;
   flex-shrink: 0;
 }
+
+.field-error {
+  margin-top: 6px;
+  color: #be123c;
+  font-size: 0.85rem;
+  font-weight: 700;
+}

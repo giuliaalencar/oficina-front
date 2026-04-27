@@ -21,6 +21,7 @@ export class OrdensServicoComponent implements OnInit {
 
   erro = '';
   sucesso = '';
+  errosCampos: Record<string, string> = {};
 
   novaOrdem = {
     veiculoId: ''
@@ -44,6 +45,31 @@ export class OrdensServicoComponent implements OnInit {
   this.carregarVeiculos();
   this.carregarItens();
 }
+
+validarNovaOrdem(): boolean {
+  this.errosCampos = {};
+
+  if (!this.novaOrdem.veiculoId) {
+    this.errosCampos['veiculoId'] = 'Selecione um veículo para criar a ordem.';
+  }
+
+  return Object.keys(this.errosCampos).length === 0;
+}
+
+validarItemOrdem(): boolean {
+  this.errosCampos = {};
+
+  if (!this.novoItem.itemId) {
+    this.errosCampos['itemId'] = 'Selecione um item.';
+  }
+
+  if (!this.novoItem.quantidade || Number(this.novoItem.quantidade) <= 0) {
+    this.errosCampos['quantidade'] = 'Informe uma quantidade maior que zero.';
+  }
+
+  return Object.keys(this.errosCampos).length === 0;
+}
+
 
   carregarResumo() {
   this.ordensService.getResumo().subscribe({
@@ -101,6 +127,10 @@ export class OrdensServicoComponent implements OnInit {
   criarOrdem() {
     this.erro = '';
     this.sucesso = '';
+    if (!this.validarNovaOrdem()) {
+  return;
+}
+
 
     if (!this.novaOrdem.veiculoId) {
       this.erro = 'Selecione um veículo para criar a ordem';
@@ -146,6 +176,10 @@ export class OrdensServicoComponent implements OnInit {
 
     this.erro = '';
     this.sucesso = '';
+    if (!this.validarItemOrdem()) {
+  return;
+}
+
 
     this.ordensService.addItem(this.ordemSelecionada.id, this.novoItem).subscribe({
       next: () => {

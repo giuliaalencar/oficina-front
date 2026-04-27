@@ -16,6 +16,7 @@ export class ClientesComponent implements OnInit {
   clientes: Cliente[] = [];
   erro = '';
   sucesso = '';
+  errosCampos: Record<string, string> = {};
   editando: Cliente | null = null;
 
   novoCliente = {
@@ -36,6 +37,33 @@ export class ClientesComponent implements OnInit {
     this.carregarClientes();
   }
 
+  validarFormulario(): boolean {
+  this.errosCampos = {};
+
+  const documento = this.novoCliente.cpfCnpj.replace(/\D/g, '');
+
+  if (!this.novoCliente.nome.trim()) {
+    this.errosCampos['nome'] = 'Informe o nome do cliente.';
+  }
+
+  if (!this.novoCliente.email.trim()) {
+    this.errosCampos['email'] = 'Informe o email do cliente.';
+  }
+
+  if (!this.novoCliente.telefone.trim()) {
+    this.errosCampos['telefone'] = 'Informe o telefone do cliente.';
+  }
+
+  if (!this.novoCliente.cpfCnpj.trim()) {
+    this.errosCampos['cpfCnpj'] = 'Informe o CPF ou CNPJ.';
+  } else if (documento.length !== 11 && documento.length !== 14) {
+    this.errosCampos['cpfCnpj'] = 'CPF/CNPJ inválido.';
+  }
+
+  return Object.keys(this.errosCampos).length === 0;
+}
+
+
   carregarClientes() {
     this.clientesService.getClientes().subscribe({
       next: (res) => {
@@ -53,6 +81,10 @@ export class ClientesComponent implements OnInit {
     this.erro = '';
     this.sucesso = '';
 
+    if (!this.validarFormulario()) {
+  return;
+}
+
     this.clientesService.criarCliente(this.novoCliente).subscribe({
       next: () => {
         this.sucesso = 'Cliente cadastrado com sucesso!';
@@ -65,9 +97,16 @@ export class ClientesComponent implements OnInit {
         this.carregarClientes();
       },
       error: (err) => {
-        console.log('ERRO AO CRIAR:', err);
-        this.erro = err?.error || 'Erro ao criar cliente';
-      }
+  console.log('ERRO AO CRIAR:', err);
+
+  if (typeof err?.error === 'string' && err.error.includes('ERR_001')) {
+    this.errosCampos['cpfCnpj'] = 'CPF/CNPJ inválido.';
+    return;
+  }
+
+  this.erro = err?.error || 'Erro ao criar cliente';
+}
+
     });
   }
 
@@ -89,6 +128,10 @@ export class ClientesComponent implements OnInit {
 
     this.erro = '';
     this.sucesso = '';
+    if (!this.validarFormulario()) {
+    return;
+  }
+
 
     const clienteAtualizado = {
       ...this.editando,
@@ -108,9 +151,16 @@ export class ClientesComponent implements OnInit {
         this.carregarClientes();
       },
       error: (err) => {
-        console.log('ERRO AO ATUALIZAR:', err);
-        this.erro = err?.error || 'Erro ao atualizar cliente';
-      }
+  console.log('ERRO AO ATUALIZAR:', err);
+
+  if (typeof err?.error === 'string' && err.error.includes('ERR_001')) {
+    this.errosCampos['cpfCnpj'] = 'CPF/CNPJ inválido.';
+    return;
+  }
+
+  this.erro = err?.error || 'Erro ao atualizar cliente';
+}
+
     });
   }
 
