@@ -1,154 +1,62 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
-import { OrdensServicoService, OrdemServico } from '../../services/ordens-servico';
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 
-@Component({
-  selector: 'app-ordens-servico',
-  standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
-  templateUrl: './ordens-servico.html',
-  styleUrl: './ordens-servico.css'
+export interface OrdemServico {
+  id: number;
+  veiculoId: string;
+  dataEntrada: string;
+  status: string;
+  valorTotal: number;
+  itens: any[];
+}
+
+@Injectable({
+  providedIn: 'root'
 })
-export class OrdensServicoComponent implements OnInit {
-  ordens: OrdemServico[] = [];
-  veiculos: any[] = [];
-  itensDisponiveis: any[] = [];
-  ordemSelecionada: any = null;
+export class OrdensServicoComponent  {
 
-  erro = '';
-  sucesso = '';
+  private apiUrl = 'https://oficina-api-9.onrender.com/api/ordens-servico';
+  private veiculosUrl = 'https://oficina-api-9.onrender.com/api/veiculos';
+  private itensUrl = 'https://oficina-api-9.onrender.com/api/itens';
 
-  novaOrdem = {
-    veiculoId: ''
-  };
+  constructor(private http: HttpClient) {}
 
-  novoItem = {
-    itemId: '',
-    quantidade: 1
-  };
-
-  constructor(
-    private router: Router,
-    private ordensService: OrdensServicoService
-  ) {}
-
-  ngOnInit(): void {
-    this.carregarOrdens();
-    this.carregarVeiculos();
-    this.carregarItens();
+  // 🔹 Buscar ordens
+  getOrdens(): Observable<OrdemServico[]> {
+    return this.http.get<OrdemServico[]>(this.apiUrl);
   }
 
-  carregarOrdens() {
-    this.ordensService.getOrdens().subscribe({
-      next: (res) => this.ordens = res,
-      error: (err) => {
-        console.log(err);
-        this.erro = 'Erro ao carregar ordens de serviço';
-      }
+  // 🔹 Criar ordem
+  criarOrdem(payload: { veiculoId: string }) {
+    return this.http.post<OrdemServico>(this.apiUrl, payload);
+  }
+
+  // 🔹 Buscar veículos
+  getVeiculos(): Observable<any[]> {
+    return this.http.get<any[]>(this.veiculosUrl);
+  }
+
+  // 🔹 Buscar itens disponíveis
+  getItensDisponiveis(): Observable<any[]> {
+    return this.http.get<any[]>(this.itensUrl);
+  }
+
+  // 🔹 Buscar ordem por ID
+  getOrdemById(id: number) {
+    return this.http.get<any>(`${this.apiUrl}/${id}`);
+  }
+
+  // 🔹 Adicionar item na ordem
+  addItem(ordemId: number, itemId: number, quantidade: number) {
+    return this.http.post(`${this.apiUrl}/${ordemId}/itens`, {
+      itemId,
+      quantidade
     });
   }
 
-  carregarVeiculos() {
-    this.ordensService.getVeiculos().subscribe({
-      next: (res) => this.veiculos = res,
-      error: (err) => console.log(err)
-    });
-  }
-
-  carregarItens() {
-    this.ordensService.getItensDisponiveis().subscribe({
-      next: (res) => this.itensDisponiveis = res,
-      error: (err) => console.log(err)
-    });
-  }
-
-  criarOrdem() {
-    this.erro = '';
-    this.sucesso = '';
-
-    this.ordensService.criarOrdem(this.novaOrdem).subscribe({
-      next: () => {
-        this.sucesso = 'Ordem de serviço criada com sucesso!';
-        this.novaOrdem = { veiculoId: '' };
-        this.carregarOrdens();
-      },
-      error: (err) => {
-        console.log(err);
-        this.erro = err?.error || 'Erro ao criar ordem de serviço';
-      }
-    });
-  }
-
-  selecionarOrdem(ordem: OrdemServico) {
-    this.ordensService.getOrdemById(ordem.id).subscribe({
-      next: (res) => this.ordemSelecionada = res,
-      error: (err) => console.log(err)
-    });
-  }
-
-  adicionarItem() {
-    if (!this.ordemSelecionada) return;
-
-    this.erro = '';
-    this.sucesso = '';
-
-    this.ordensService.addItem(this.ordemSelecionada.id, this.novoItem).subscribe({
-      next: () => {
-        this.sucesso = 'Item adicionado!';
-        this.novoItem = { itemId: '', quantidade: 1 };
-        this.selecionarOrdem(this.ordemSelecionada);
-        this.carregarOrdens();
-      },
-      error: (err) => {
-        console.log(err);
-        this.erro = err?.error || 'Erro ao adicionar item';
-      }
-    });
-  }
-
-  atualizarStatus(ordem: OrdemServico, novoStatus: string) {
-    this.erro = '';
-    this.sucesso = '';
-
-    this.ordensService.atualizarStatus(ordem.id, novoStatus).subscribe({
-      next: () => {
-        this.sucesso = 'Status atualizado com sucesso!';
-        this.carregarOrdens();
-
-        if (this.ordemSelecionada && this.ordemSelecionada.id === ordem.id) {
-          this.selecionarOrdem(ordem);
-        }
-      },
-      error: (err) => {
-        console.log(err);
-        this.erro = err?.error || 'Erro ao atualizar status';
-      }
-    });
-  }
-
-  nomeVeiculo(veiculoId: string): string {
-    const veiculo = this.veiculos.find(v => v.id === veiculoId);
-    if (!veiculo) return 'Veículo não encontrado';
-
-    return `${veiculo.placa} - ${veiculo.marca} ${veiculo.modelo}`;
-  }
-
-  proximoStatus(statusAtual: string): string | null {
-    const fluxo: Record<string, string> = {
-      'Recebida': 'Em Diagnóstico',
-      'Em Diagnóstico': 'Aguardando Aprovação',
-      'Aguardando Aprovação': 'Em Execução',
-      'Em Execução': 'Finalizada',
-      'Finalizada': 'Entregue'
-    };
-
-    return fluxo[statusAtual] || null;
-  }
-
-  logout() {
-    localStorage.removeItem('token');
-    this.router.navigate(['/login']);
+  // 🔹 Atualizar status (avançar ordem)
+  atualizarStatus(id: number) {
+    return this.http.put(`${this.apiUrl}/${id}/status`, {});
   }
 }

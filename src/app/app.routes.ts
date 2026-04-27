@@ -18,12 +18,13 @@ export const routes: Routes = [
     component: DashboardComponent,
     canActivate: [authGuard],
     children: [
-      { path: 'clientes', component: ClientesComponent },
-      { path: 'veiculos', component: VeiculosComponent },
-      { path: 'itens', component: ItensComponent },
-      { path: 'ordens-servico', component: OrdensServicoComponent },
-      { path: '', redirectTo: 'clientes', pathMatch: 'full' },
-      { path: '', component: DashboardHomeComponent },
-    ]
+  { path: 'dashboard', component: DashboardHomeComponent },
+  { path: 'clientes', component: ClientesComponent },
+  { path: 'veiculos', component: VeiculosComponent },
+  { path: 'itens', component: ItensComponent },
+  { path: 'ordens-servico', component: OrdensServicoComponent },
+  { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+]
+
   }
 ];
