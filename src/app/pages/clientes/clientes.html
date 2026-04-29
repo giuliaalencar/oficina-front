@@ -1,22 +1,28 @@
-<a routerLink="/itens" class="btn btn-outline-secondary">Itens</a>
-<a routerLink="/ordens-servico" class="btn btn-outline-secondary">Ordens</a>
-
 <div class="container py-4">
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-      <h1 class="fw-bold mb-1">Clientes</h1>
-      <p class="text-muted mb-0">Gerencie os clientes da oficina</p>
+  <div class="page-header">
+    <div class="page-title">
+      <h1 class="fw-bold mb-1">
+        {{ modoFormulario ? (editando ? 'Editar Cliente' : 'Cadastrar Cliente') : 'Clientes' }}
+      </h1>
+      <p class="text-muted mb-0">
+        {{ modoFormulario ? 'Preencha os dados do cliente' : 'Listagem de clientes cadastrados' }}
+      </p>
     </div>
 
     <div class="d-flex gap-2">
-  <a routerLink="/veiculos" class="btn btn-outline-secondary">
-    Veículos
-  </a>
+      <button *ngIf="!modoFormulario" class="btn btn-primary" (click)="irParaCadastro()">
+        Novo cliente
+      </button>
 
-  <button class="btn btn-outline-danger" (click)="logout()">
-    Sair
-  </button>
-</div>
+      <button *ngIf="modoFormulario" class="btn btn-outline-secondary" (click)="voltar()">
+        Voltar
+      </button>
+
+      <a routerLink="/veiculos" class="btn btn-outline-secondary">Veículos</a>
+      <a routerLink="/itens" class="btn btn-outline-secondary">Itens</a>
+      <a routerLink="/ordens-servico" class="btn btn-outline-secondary">Ordens</a>
+      <button class="btn btn-outline-danger" (click)="logout()">Sair</button>
+    </div>
   </div>
 
   <div *ngIf="erro" class="alert alert-danger shadow-sm">
@@ -27,115 +33,109 @@
     {{ sucesso }}
   </div>
 
-  <div class="row g-4">
-    <div class="col-lg-4">
-      <div class="card shadow-sm border-0 rounded-4">
-        <div class="card-body p-4">
-          <h4 class="fw-semibold mb-3">
-            {{ editando ? 'Editar cliente' : 'Novo cliente' }}
-          </h4>
-
-          <div class="mb-3">
-            <label class="form-label">Nome</label>
-            <input [(ngModel)]="novoCliente.nome" class="form-control" placeholder="Digite o nome">
-          </div>
-          <div class="field-error" *ngIf="errosCampos['nome']">
-  {{ errosCampos['nome'] }}
-</div>
-
-
-          <div class="mb-3">
-            <label class="form-label">Email</label>
-            <input [(ngModel)]="novoCliente.email" class="form-control" placeholder="Digite o email">
-          </div>
-
-          <div class="field-error" *ngIf="errosCampos['email']">
-  {{ errosCampos['email'] }}
-</div>
-
-
-          <div class="mb-3">
-            <label class="form-label">Telefone</label>
-            <input [(ngModel)]="novoCliente.telefone" class="form-control" placeholder="Digite o telefone">
-          </div>
-
-          <div class="field-error" *ngIf="errosCampos['telefone']">
-  {{ errosCampos['telefone'] }}
-</div>
-
-
-          <div class="mb-3">
-            <label class="form-label">CPF/CNPJ</label>
-            <input [(ngModel)]="novoCliente.cpfCnpj" class="form-control" placeholder="Digite o CPF/CNPJ">
-          </div>
-          <div class="field-error" *ngIf="errosCampos['cpfCnpj']">
-  {{ errosCampos['cpfCnpj'] }}
-</div>
-
-
-          <div class="d-flex gap-2">
-            <button class="btn btn-primary w-100" *ngIf="!editando" (click)="criarCliente()">
-              Cadastrar
-            </button>
-
-            <button class="btn btn-success w-100" *ngIf="editando" (click)="salvarEdicao()">
-              Salvar
-            </button>
-
-            <button class="btn btn-secondary" *ngIf="editando" (click)="cancelarEdicao()">
-              Cancelar
-            </button>
-          </div>
+  <div *ngIf="!modoFormulario">
+    <div class="card shadow-sm border-0 rounded-4">
+      <div class="card-body p-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h4 class="fw-semibold mb-0">Lista de clientes</h4>
+          <span class="badge text-bg-dark">{{ clientes.length }} clientes</span>
         </div>
+
+        <div class="table-responsive" *ngIf="clientes.length > 0; else semClientes">
+          <table class="table align-middle table-hover">
+            <thead class="table-light">
+              <tr>
+                <th>Nome</th>
+                <th>Email</th>
+                <th>Telefone</th>
+                <th>CPF/CNPJ</th>
+                <th class="text-center">Ações</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr *ngFor="let cliente of clientes">
+                <td class="fw-medium">{{ cliente.nome }}</td>
+                <td>{{ cliente.email }}</td>
+                <td>{{ cliente.telefone }}</td>
+                <td>{{ cliente.cpfCnpj }}</td>
+                <td class="text-center">
+                  <div class="d-flex justify-content-center gap-2">
+                    <button class="btn btn-sm btn-warning" (click)="irParaEdicao(cliente)">
+                      Editar
+                    </button>
+
+                    <button class="btn btn-sm btn-danger" (click)="deletarCliente(cliente.id)">
+                      Excluir
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <ng-template #semClientes>
+          <div class="text-center py-5 text-muted">
+            <h5 class="mb-2">Nenhum cliente cadastrado</h5>
+            <p class="mb-0">Clique em Novo cliente para cadastrar o primeiro cliente.</p>
+          </div>
+        </ng-template>
       </div>
     </div>
+  </div>
 
-    <div class="col-lg-8">
-      <div class="card shadow-sm border-0 rounded-4">
-        <div class="card-body p-4">
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <h4 class="fw-semibold mb-0">Lista de clientes</h4>
-            <span class="badge text-bg-dark">{{ clientes.length }} clientes</span>
+  <div *ngIf="modoFormulario">
+    <div class="card shadow-sm border-0 rounded-4">
+      <div class="card-body p-4">
+        <h4 class="fw-semibold mb-3">
+          {{ editando ? 'Editar cliente' : 'Novo cliente' }}
+        </h4>
+
+        <div class="mb-3">
+          <label class="form-label">Nome</label>
+          <input [(ngModel)]="novoCliente.nome" class="form-control" placeholder="Digite o nome" maxlength="100">
+
+          <div class="field-error" *ngIf="errosCampos['nome']">
+            {{ errosCampos['nome'] }}
           </div>
+        </div>
 
-          <div class="table-responsive" *ngIf="clientes.length > 0; else semClientes">
-            <table class="table align-middle table-hover">
-              <thead class="table-light">
-                <tr>
-                  <th>Nome</th>
-                  <th>Email</th>
-                  <th>Telefone</th>
-                  <th>CPF/CNPJ</th>
-                  <th class="text-center">Ações</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let cliente of clientes">
-                  <td class="fw-medium">{{ cliente.nome }}</td>
-                  <td>{{ cliente.email }}</td>
-                  <td>{{ cliente.telefone }}</td>
-                  <td>{{ cliente.cpfCnpj }}</td>
-                  <td class="text-center">
-                    <div class="d-flex justify-content-center gap-2">
-                      <button class="btn btn-sm btn-warning" (click)="editarCliente(cliente)">
-                        Editar
-                      </button>
-                      <button class="btn btn-sm btn-danger" (click)="deletarCliente(cliente.id)">
-                        Excluir
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+        <div class="mb-3">
+          <label class="form-label">Email</label>
+          <input [(ngModel)]="novoCliente.email" class="form-control" placeholder="Digite o email" maxlength="100">
+
+          <div class="field-error" *ngIf="errosCampos['email']">
+            {{ errosCampos['email'] }}
           </div>
+        </div>
 
-          <ng-template #semClientes>
-            <div class="text-center py-5 text-muted">
-              <h5 class="mb-2">Nenhum cliente cadastrado</h5>
-              <p class="mb-0">Cadastre o primeiro cliente usando o formulário ao lado.</p>
-            </div>
-          </ng-template>
+        <div class="mb-3">
+          <label class="form-label">Telefone</label>
+          <input [(ngModel)]="novoCliente.telefone" class="form-control" placeholder="Digite o telefone" maxlength="15">
+
+          <div class="field-error" *ngIf="errosCampos['telefone']">
+            {{ errosCampos['telefone'] }}
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">CPF/CNPJ</label>
+          <input [(ngModel)]="novoCliente.cpfCnpj" class="form-control" placeholder="Digite o CPF/CNPJ" maxlength="20">
+
+          <div class="field-error" *ngIf="errosCampos['cpfCnpj']">
+            {{ errosCampos['cpfCnpj'] }}
+          </div>
+        </div>
+
+        <div class="d-flex gap-2">
+          <button class="btn btn-primary" (click)="salvarCliente()">
+            {{ editando ? 'Salvar alterações' : 'Cadastrar' }}
+          </button>
+
+          <button class="btn btn-outline-secondary" (click)="voltar()">
+            Cancelar
+          </button>
         </div>
       </div>
     </div>
