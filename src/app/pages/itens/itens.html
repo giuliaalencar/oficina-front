@@ -1,11 +1,23 @@
 <div class="container py-4">
   <div class="page-header">
     <div class="page-title">
-      <h1 class="fw-bold mb-1">Itens</h1>
-      <p class="text-muted mb-0">Gerencie peças e serviços da oficina</p>
+      <h1 class="fw-bold mb-1">
+        {{ modoFormulario ? (editando ? 'Editar Item' : 'Cadastrar Item') : 'Itens' }}
+      </h1>
+      <p class="text-muted mb-0">
+        {{ modoFormulario ? 'Preencha os dados do item' : 'Listagem de peças e serviços cadastrados' }}
+      </p>
     </div>
 
     <div class="d-flex gap-2">
+      <button *ngIf="!modoFormulario" class="btn btn-primary" (click)="irParaCadastro()">
+        Novo item
+      </button>
+
+      <button *ngIf="modoFormulario" class="btn btn-outline-secondary" (click)="voltar()">
+        Voltar
+      </button>
+
       <a routerLink="/clientes" class="btn btn-outline-secondary">Clientes</a>
       <a routerLink="/veiculos" class="btn btn-outline-secondary">Veículos</a>
       <a routerLink="/ordens-servico" class="btn btn-outline-secondary">Ordens</a>
@@ -21,141 +33,135 @@
     {{ sucesso }}
   </div>
 
-  <div class="row g-4">
-    <div class="col-lg-4">
-      <div class="card shadow-sm border-0 rounded-4">
-        <div class="card-body p-4">
-          <h4 class="fw-semibold mb-3">
-            {{ editando ? 'Editar item' : 'Novo item' }}
-          </h4>
-
-          <div class="mb-3">
-            <label class="form-label">Descrição</label>
-            <input
-              [(ngModel)]="novoItem.descricao"
-              class="form-control"
-              placeholder="Digite a descrição"
-              maxlength="255"
-            >
-
-            <div class="field-error" *ngIf="errosCampos['descricao']">
-              {{ errosCampos['descricao'] }}
-            </div>
-          </div>
-
-          <div class="mb-3">
-            <label class="form-label">Valor</label>
-            <input
-              type="number"
-              min="0"
-              step="0.01"
-              [(ngModel)]="novoItem.valor"
-              class="form-control"
-              placeholder="Digite o valor"
-            >
-
-            <div class="field-error" *ngIf="errosCampos['valor']">
-              {{ errosCampos['valor'] }}
-            </div>
-          </div>
-
-          <div class="mb-3">
-            <label class="form-label">Estoque</label>
-            <input
-              type="number"
-              min="0"
-              [(ngModel)]="novoItem.estoque"
-              class="form-control"
-              placeholder="Digite o estoque"
-            >
-
-            <div class="field-error" *ngIf="errosCampos['estoque']">
-              {{ errosCampos['estoque'] }}
-            </div>
-          </div>
-
-          <div class="mb-3">
-            <label class="form-label">Tipo</label>
-            <select [(ngModel)]="novoItem.tipo" class="form-select">
-              <option value="">Selecione o tipo</option>
-              <option value="Peca">Peça</option>
-              <option value="Servico">Serviço</option>
-            </select>
-
-            <div class="field-error" *ngIf="errosCampos['tipo']">
-              {{ errosCampos['tipo'] }}
-            </div>
-          </div>
-
-          <div class="d-flex gap-2">
-            <button class="btn btn-primary w-100" *ngIf="!editando" (click)="criarItem()">
-              Cadastrar
-            </button>
-
-            <button class="btn btn-success w-100" *ngIf="editando" (click)="salvarEdicao()">
-              Salvar
-            </button>
-
-            <button class="btn btn-secondary" *ngIf="editando" (click)="cancelarEdicao()">
-              Cancelar
-            </button>
-          </div>
+  <div *ngIf="!modoFormulario">
+    <div class="card shadow-sm border-0 rounded-4">
+      <div class="card-body p-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h4 class="fw-semibold mb-0">Lista de itens</h4>
+          <span class="badge text-bg-dark">{{ itens.length }} itens</span>
         </div>
+
+        <div class="table-responsive" *ngIf="itens.length > 0; else semItens">
+          <table class="table align-middle table-hover">
+            <thead class="table-light">
+              <tr>
+                <th>Descrição</th>
+                <th>Tipo</th>
+                <th>Valor</th>
+                <th>Estoque</th>
+                <th class="text-center">Ações</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr *ngFor="let item of itens">
+                <td class="fw-medium">{{ item.descricao }}</td>
+                <td>
+                  <span class="badge text-bg-secondary">
+                    {{ item.tipo === 'Peca' ? 'Peça' : 'Serviço' }}
+                  </span>
+                </td>
+                <td>{{ item.valor | currency:'BRL' }}</td>
+                <td>{{ item.estoque }}</td>
+                <td class="text-center">
+                  <div class="d-flex justify-content-center gap-2">
+                    <button class="btn btn-sm btn-warning" (click)="irParaEdicao(item)">
+                      Editar
+                    </button>
+
+                    <button class="btn btn-sm btn-danger" (click)="deletarItem(item.id)">
+                      Excluir
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <ng-template #semItens>
+          <div class="text-center py-5 text-muted">
+            <h5 class="mb-2">Nenhum item cadastrado</h5>
+            <p class="mb-0">Clique em Novo item para cadastrar o primeiro item.</p>
+          </div>
+        </ng-template>
       </div>
     </div>
+  </div>
 
-    <div class="col-lg-8">
-      <div class="card shadow-sm border-0 rounded-4">
-        <div class="card-body p-4">
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <h4 class="fw-semibold mb-0">Lista de itens</h4>
-            <span class="badge text-bg-dark">{{ itens.length }} itens</span>
+  <div *ngIf="modoFormulario">
+    <div class="card shadow-sm border-0 rounded-4">
+      <div class="card-body p-4">
+        <h4 class="fw-semibold mb-3">
+          {{ editando ? 'Editar item' : 'Novo item' }}
+        </h4>
+
+        <div class="mb-3">
+          <label class="form-label">Descrição</label>
+          <input
+            [(ngModel)]="novoItem.descricao"
+            class="form-control"
+            placeholder="Digite a descrição"
+            maxlength="255"
+          >
+
+          <div class="field-error" *ngIf="errosCampos['descricao']">
+            {{ errosCampos['descricao'] }}
           </div>
+        </div>
 
-          <div class="table-responsive" *ngIf="itens.length > 0; else semItens">
-            <table class="table align-middle table-hover">
-              <thead class="table-light">
-                <tr>
-                  <th>Descrição</th>
-                  <th>Tipo</th>
-                  <th>Valor</th>
-                  <th>Estoque</th>
-                  <th class="text-center">Ações</th>
-                </tr>
-              </thead>
+        <div class="mb-3">
+          <label class="form-label">Valor</label>
+          <input
+            type="number"
+            min="0"
+            step="0.01"
+            [(ngModel)]="novoItem.valor"
+            class="form-control"
+            placeholder="Digite o valor"
+          >
 
-              <tbody>
-                <tr *ngFor="let item of itens">
-                  <td class="fw-medium">{{ item.descricao }}</td>
-                  <td>
-                    <span class="badge text-bg-secondary">
-                      {{ item.tipo === 'Peca' ? 'Peça' : 'Serviço' }}
-                    </span>
-                  </td>
-                  <td>{{ item.valor | currency:'BRL' }}</td>
-                  <td>{{ item.estoque }}</td>
-                  <td class="text-center">
-                    <div class="d-flex justify-content-center gap-2">
-                      <button class="btn btn-sm btn-warning" (click)="editarItem(item)">
-                        Editar
-                      </button>
-
-                      <button class="btn btn-sm btn-danger" (click)="deletarItem(item.id)">
-                        Excluir
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+          <div class="field-error" *ngIf="errosCampos['valor']">
+            {{ errosCampos['valor'] }}
           </div>
+        </div>
 
-          <ng-template #semItens>
-            <div class="text-center py-5 text-muted">
-              <h5 class="mb-2">Nenhum item cadastrado</h5>
-              <p class="mb-0">Cadastre o primeiro item usando o formulário ao lado.</p>
-            </div>
-          </ng-template>
+        <div class="mb-3">
+          <label class="form-label">Estoque</label>
+          <input
+            type="number"
+            min="0"
+            [(ngModel)]="novoItem.estoque"
+            class="form-control"
+            placeholder="Digite o estoque"
+          >
+
+          <div class="field-error" *ngIf="errosCampos['estoque']">
+            {{ errosCampos['estoque'] }}
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Tipo</label>
+          <select [(ngModel)]="novoItem.tipo" class="form-select">
+            <option value="">Selecione o tipo</option>
+            <option value="Peca">Peça</option>
+            <option value="Servico">Serviço</option>
+          </select>
+
+          <div class="field-error" *ngIf="errosCampos['tipo']">
+            {{ errosCampos['tipo'] }}
+          </div>
+        </div>
+
+        <div class="d-flex gap-2">
+          <button class="btn btn-primary" (click)="salvarItem()">
+            {{ editando ? 'Salvar alterações' : 'Cadastrar' }}
+          </button>
+
+          <button class="btn btn-outline-secondary" (click)="voltar()">
+            Cancelar
+          </button>
         </div>
       </div>
     </div>

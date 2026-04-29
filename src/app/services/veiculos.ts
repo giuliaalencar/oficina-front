@@ -26,6 +26,10 @@ export class VeiculosService {
     return this.http.get<Veiculo[]>(this.veiculosUrl);
   }
 
+  getVeiculoById(id: string): Observable<Veiculo> {
+    return this.http.get<Veiculo>(`${this.veiculosUrl}/${id}`);
+  }
+
   getClientes(): Observable<any[]> {
     return this.http.get<any[]>(this.clientesUrl);
   }

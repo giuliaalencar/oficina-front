@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ItensService, Item } from '../../services/itens';
 
 @Component({
@@ -16,6 +16,8 @@ export class ItensComponent implements OnInit {
   erro = '';
   sucesso = '';
   errosCampos: Record<string, string> = {};
+
+  modoFormulario = false;
   editando: Item | null = null;
 
   novoItem = {
@@ -26,38 +28,27 @@ export class ItensComponent implements OnInit {
   };
 
   constructor(
-  private router: Router,
-  private itensService: ItensService,
-  private cdr: ChangeDetectorRef
-) {}
-
+    private router: Router,
+    private route: ActivatedRoute,
+    private itensService: ItensService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
-    this.carregarItens();
+    this.modoFormulario = this.router.url.startsWith('/itens/cadastro');
+
+    if (this.modoFormulario) {
+      this.route.queryParamMap.subscribe(params => {
+        const itemId = params.get('itemId');
+
+        if (itemId) {
+          this.carregarItemParaEdicao(itemId);
+        }
+      });
+    } else {
+      this.carregarItens();
+    }
   }
-
-  validarFormulario(): boolean {
-  this.errosCampos = {};
-
-  if (!this.novoItem.descricao.trim()) {
-    this.errosCampos['descricao'] = 'Informe a descrição do item.';
-  }
-
-  if (Number(this.novoItem.valor) <= 0) {
-    this.errosCampos['valor'] = 'Informe um valor maior que zero.';
-  }
-
-  if (Number(this.novoItem.estoque) < 0) {
-    this.errosCampos['estoque'] = 'O estoque não pode ser negativo.';
-  }
-
-  if (!this.novoItem.tipo) {
-    this.errosCampos['tipo'] = 'Selecione o tipo do item.';
-  }
-
-  return Object.keys(this.errosCampos).length === 0;
-}
-
 
   carregarItens() {
     this.itensService.getItens().subscribe({
@@ -68,18 +59,69 @@ export class ItensComponent implements OnInit {
       error: (err) => {
         console.log(err);
         this.erro = 'Erro ao carregar itens';
+        this.cdr.detectChanges();
       }
     });
   }
 
-  criarItem() {
+  carregarItemParaEdicao(id: string) {
+    this.itensService.getItemById(id).subscribe({
+      next: (item) => {
+        this.editando = item;
+        this.novoItem = {
+          descricao: item.descricao,
+          valor: item.valor,
+          estoque: item.estoque,
+          tipo: item.tipo
+        };
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.log(err);
+        this.erro = 'Item não encontrado.';
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  validarFormulario(): boolean {
+    this.errosCampos = {};
+
+    if (!this.novoItem.descricao.trim()) {
+      this.errosCampos['descricao'] = 'Informe a descrição do item.';
+    }
+
+    if (Number(this.novoItem.valor) <= 0) {
+      this.errosCampos['valor'] = 'Informe um valor maior que zero.';
+    }
+
+    if (Number(this.novoItem.estoque) < 0) {
+      this.errosCampos['estoque'] = 'O estoque não pode ser negativo.';
+    }
+
+    if (!this.novoItem.tipo) {
+      this.errosCampos['tipo'] = 'Selecione o tipo do item.';
+    }
+
+    return Object.keys(this.errosCampos).length === 0;
+  }
+
+  salvarItem() {
     this.erro = '';
     this.sucesso = '';
+
     if (!this.validarFormulario()) {
-  return;
-}
+      return;
+    }
 
+    if (this.editando) {
+      this.salvarEdicao();
+    } else {
+      this.criarItem();
+    }
+  }
 
+  criarItem() {
     this.itensService.criarItem({
       ...this.novoItem,
       valor: Number(this.novoItem.valor),
@@ -87,8 +129,7 @@ export class ItensComponent implements OnInit {
     }).subscribe({
       next: () => {
         this.sucesso = 'Item cadastrado com sucesso!';
-        this.resetForm();
-        this.carregarItens();
+        this.router.navigate(['/itens']);
       },
       error: (err) => {
         console.log(err);
@@ -97,25 +138,8 @@ export class ItensComponent implements OnInit {
     });
   }
 
-  editarItem(item: Item) {
-    this.editando = { ...item };
-    this.novoItem = {
-      descricao: item.descricao,
-      valor: item.valor,
-      estoque: item.estoque,
-      tipo: item.tipo
-    };
-  }
-
   salvarEdicao() {
     if (!this.editando) return;
-    this.erro = '';
-this.sucesso = '';
-
-if (!this.validarFormulario()) {
-  return;
-}
-
 
     const itemAtualizado: Item = {
       ...this.editando,
@@ -127,9 +151,7 @@ if (!this.validarFormulario()) {
     this.itensService.atualizarItem(itemAtualizado).subscribe({
       next: () => {
         this.sucesso = 'Item atualizado com sucesso!';
-        this.editando = null;
-        this.resetForm();
-        this.carregarItens();
+        this.router.navigate(['/itens']);
       },
       error: (err) => {
         console.log(err);
@@ -138,12 +160,20 @@ if (!this.validarFormulario()) {
     });
   }
 
-  cancelarEdicao() {
-    this.editando = null;
-    this.resetForm();
+  irParaCadastro() {
+    this.router.navigate(['/itens/cadastro']);
+  }
+
+  irParaEdicao(item: Item) {
+    this.router.navigate(['/itens/cadastro'], {
+      queryParams: { itemId: item.id }
+    });
   }
 
   deletarItem(id: number) {
+    this.erro = '';
+    this.sucesso = '';
+
     this.itensService.deletarItem(id).subscribe({
       next: () => {
         this.sucesso = 'Item excluído com sucesso!';
@@ -156,14 +186,8 @@ if (!this.validarFormulario()) {
     });
   }
 
-  resetForm() {
-    this.novoItem = {
-      descricao: '',
-      valor: 0,
-      estoque: 0,
-      tipo: 'Peca'
-    };
-    this.erro = '';
+  voltar() {
+    this.router.navigate(['/itens']);
   }
 
   logout() {

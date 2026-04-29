@@ -22,6 +22,10 @@ export class ItensService {
     return this.http.get<Item[]>(this.apiUrl);
   }
 
+  getItemById(id: number | string): Observable<Item> {
+    return this.http.get<Item>(`${this.apiUrl}/${id}`);
+  }
+
   criarItem(item: Omit<Item, 'id'>): Observable<Item> {
     return this.http.post<Item>(this.apiUrl, item);
   }

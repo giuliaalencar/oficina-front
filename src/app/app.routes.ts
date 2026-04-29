@@ -29,7 +29,17 @@ export const routes: Routes = [
           import('./pages/veiculos/veiculos').then(m => m.VeiculosComponent)
       },
       {
+        path: 'veiculos/cadastro',
+        loadComponent: () =>
+          import('./pages/veiculos/veiculos').then(m => m.VeiculosComponent)
+      },
+      {
         path: 'itens',
+        loadComponent: () =>
+          import('./pages/itens/itens').then(m => m.ItensComponent)
+      },
+      {
+        path: 'itens/cadastro',
         loadComponent: () =>
           import('./pages/itens/itens').then(m => m.ItensComponent)
       },
