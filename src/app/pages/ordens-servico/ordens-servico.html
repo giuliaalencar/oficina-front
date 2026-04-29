@@ -1,8 +1,12 @@
 <div class="container py-4">
   <div class="page-header">
     <div class="page-title">
-      <h1 class="fw-bold mb-1">Ordens de Serviço</h1>
-      <p class="text-muted mb-0">Gerencie o fluxo da oficina</p>
+      <h1 class="fw-bold mb-1">
+        {{ authService.isCliente() ? 'Minhas Ordens' : 'Ordens de Serviço' }}
+      </h1>
+      <p class="text-muted mb-0">
+        {{ authService.isCliente() ? 'Acompanhe suas ordens de serviço' : 'Gerencie o fluxo da oficina' }}
+      </p>
     </div>
 
     <svg class="page-illustration" viewBox="0 0 220 150" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -16,9 +20,9 @@
     </svg>
 
     <div class="d-flex gap-2">
-      <a routerLink="/clientes" class="btn btn-outline-secondary">Clientes</a>
-      <a routerLink="/veiculos" class="btn btn-outline-secondary">Veículos</a>
-      <a routerLink="/itens" class="btn btn-outline-secondary">Itens</a>
+      <a *ngIf="authService.isAdmin()" routerLink="/clientes" class="btn btn-outline-secondary">Clientes</a>
+      <a *ngIf="authService.isAdmin()" routerLink="/veiculos" class="btn btn-outline-secondary">Veículos</a>
+      <a *ngIf="authService.isAdmin()" routerLink="/itens" class="btn btn-outline-secondary">Itens</a>
       <button class="btn btn-outline-danger" (click)="logout()">Sair</button>
     </div>
   </div>
@@ -31,7 +35,7 @@
     {{ sucesso }}
   </div>
 
-  <div class="row g-3 mb-4" *ngIf="resumo">
+  <div class="row g-3 mb-4" *ngIf="authService.isAdmin() && resumo">
     <div class="col-md-4">
       <div class="card metric-card">
         <div class="card-body">
@@ -61,7 +65,7 @@
   </div>
 
   <div class="row g-4">
-    <div class="col-lg-4">
+    <div class="col-lg-4" *ngIf="authService.isAdmin()">
       <div class="card shadow-sm border-0 rounded-4">
         <div class="card-body p-4">
           <h4 class="fw-semibold mb-3">Nova ordem</h4>
@@ -87,11 +91,13 @@
       </div>
     </div>
 
-    <div class="col-lg-8">
+    <div [class.col-lg-8]="authService.isAdmin()" [class.col-lg-12]="authService.isCliente()">
       <div class="card shadow-sm border-0 rounded-4">
         <div class="card-body p-4">
           <div class="d-flex justify-content-between align-items-center mb-3">
-            <h4 class="fw-semibold mb-0">Lista de ordens</h4>
+            <h4 class="fw-semibold mb-0">
+              {{ authService.isCliente() ? 'Minhas ordens' : 'Lista de ordens' }}
+            </h4>
             <span class="badge text-bg-dark">{{ ordens.length }} ordens</span>
           </div>
 
@@ -111,7 +117,7 @@
               <tbody>
                 <tr *ngFor="let ordem of ordens">
                   <td>#{{ ordem.id }}</td>
-                  <td>{{ nomeVeiculo(ordem.veiculoId) }}</td>
+                  <td>{{ nomeVeiculoDaOrdem(ordem) }}</td>
                   <td>{{ ordem.dataEntrada | date:'short' }}</td>
                   <td>
                     <span class="badge text-bg-secondary">{{ ordem.status }}</span>
@@ -124,7 +130,7 @@
                       </button>
 
                       <button
-                        *ngIf="proximoStatus(ordem.status)"
+                        *ngIf="authService.isAdmin() && proximoStatus(ordem.status)"
                         class="btn btn-sm btn-warning"
                         (click)="atualizarStatus(ordem, proximoStatus(ordem.status)!)"
                       >
@@ -139,8 +145,10 @@
 
           <ng-template #semOrdens>
             <div class="text-center py-5 text-muted">
-              <h5 class="mb-2">Nenhuma ordem criada</h5>
-              <p class="mb-0">Crie a primeira ordem de serviço usando o formulário ao lado.</p>
+              <h5 class="mb-2">Nenhuma ordem encontrada</h5>
+              <p class="mb-0">
+                {{ authService.isCliente() ? 'Você ainda não possui ordens vinculadas ao seu usuário.' : 'Crie a primeira ordem de serviço usando o formulário ao lado.' }}
+              </p>
             </div>
           </ng-template>
         </div>
@@ -163,13 +171,13 @@
             </button>
           </li>
 
-          <li class="nav-item">
+          <li class="nav-item" *ngIf="authService.isAdmin()">
             <button class="nav-link" [class.active]="abaAtiva === 'servicos'" (click)="abaAtiva = 'servicos'">
               Serviços
             </button>
           </li>
 
-          <li class="nav-item">
+          <li class="nav-item" *ngIf="authService.isAdmin()">
             <button class="nav-link" [class.active]="abaAtiva === 'pecas'" (click)="abaAtiva = 'pecas'">
               Peças
             </button>
@@ -185,7 +193,7 @@
         <div *ngIf="abaAtiva === 'dados'">
           <div class="row mb-4">
             <div class="col-md-6">
-              <p class="mb-1"><strong>Veículo:</strong> {{ nomeVeiculo(ordemSelecionada.veiculoId) }}</p>
+              <p class="mb-1"><strong>Veículo:</strong> {{ nomeVeiculoDaOrdem(ordemSelecionada) }}</p>
               <p class="mb-1"><strong>Data:</strong> {{ ordemSelecionada.dataEntrada | date:'short' }}</p>
               <p class="mb-1"><strong>Status:</strong> {{ ordemSelecionada.status }}</p>
             </div>
@@ -197,7 +205,7 @@
           </div>
         </div>
 
-        <div *ngIf="abaAtiva === 'servicos'">
+        <div *ngIf="authService.isAdmin() && abaAtiva === 'servicos'">
           <h5 class="fw-semibold mb-3">Adicionar serviço</h5>
 
           <div class="row g-3 mb-4">
@@ -232,7 +240,7 @@
           </div>
         </div>
 
-        <div *ngIf="abaAtiva === 'pecas'">
+        <div *ngIf="authService.isAdmin() && abaAtiva === 'pecas'">
           <h5 class="fw-semibold mb-3">Adicionar peça</h5>
 
           <div class="row g-3 mb-4">

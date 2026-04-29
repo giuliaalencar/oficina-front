@@ -9,10 +9,12 @@ import { isPlatformBrowser } from '@angular/common';
 })
 export class AuthService {
   private apiUrl = 'https://oficina-api-10.onrender.com/api/auth';
-
   private platformId = inject(PLATFORM_ID);
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(
+    private http: HttpClient,
+    private router: Router
+  ) {}
 
   login(email: string, senha: string) {
     return this.http.post<any>(`${this.apiUrl}/login`, { email, senha }).pipe(
@@ -24,40 +26,11 @@ export class AuthService {
     );
   }
 
-  getPayload(): any | null {
-  const token = this.getToken();
-
-  if (!token) {
-    return null;
-  }
-
-  try {
-    const payload = token.split('.')[1];
-    return JSON.parse(atob(payload));
-  } catch {
-    return null;
-  }
-}
-
-getPerfil(): string {
-  const payload = this.getPayload();
-
-  return payload?.['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] || '';
-}
-
-isAdmin(): boolean {
-  return this.getPerfil() === 'ADMIN';
-}
-
-isCliente(): boolean {
-  return this.getPerfil() === 'CLIENTE';
-}
-
-
   logout() {
     if (isPlatformBrowser(this.platformId)) {
       localStorage.removeItem('token');
     }
+
     this.router.navigate(['/login']);
   }
 
@@ -65,6 +38,7 @@ isCliente(): boolean {
     if (isPlatformBrowser(this.platformId)) {
       return !!localStorage.getItem('token');
     }
+
     return false;
   }
 
@@ -72,6 +46,36 @@ isCliente(): boolean {
     if (isPlatformBrowser(this.platformId)) {
       return localStorage.getItem('token');
     }
+
     return null;
+  }
+
+  getPayload(): any | null {
+    const token = this.getToken();
+
+    if (!token) {
+      return null;
+    }
+
+    try {
+      const payload = token.split('.')[1];
+      return JSON.parse(atob(payload));
+    } catch {
+      return null;
+    }
+  }
+
+  getPerfil(): string {
+    const payload = this.getPayload();
+
+    return payload?.['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] || '';
+  }
+
+  isAdmin(): boolean {
+    return this.getPerfil() === 'ADMIN';
+  }
+
+  isCliente(): boolean {
+    return this.getPerfil() === 'CLIENTE';
   }
 }

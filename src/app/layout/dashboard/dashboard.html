@@ -37,10 +37,7 @@
         Itens
       </a>
 
-      <a
-        routerLink="/ordens-servico"
-        routerLinkActive="active-link"
-      >
+      <a routerLink="/ordens-servico" routerLinkActive="active-link">
         <span>📝</span>
         {{ authService.isCliente() ? 'Minhas Ordens' : 'Ordens' }}
       </a>

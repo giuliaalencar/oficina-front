@@ -2,6 +2,7 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { AuthService } from '../../services/auth';
 import { OrdensServicoService, OrdemServico, ResumoOrdens } from '../../services/ordens-servico';
 
 @Component({
@@ -15,9 +16,10 @@ export class OrdensServicoComponent implements OnInit {
   ordens: OrdemServico[] = [];
   veiculos: any[] = [];
   itensDisponiveis: any[] = [];
-  ordemSelecionada: OrdemServico | null = null;
-  abaAtiva = 'dados';
+  ordemSelecionada: any = null;
   resumo: ResumoOrdens | null = null;
+
+  abaAtiva = 'dados';
 
   erro = '';
   sucesso = '';
@@ -33,57 +35,38 @@ export class OrdensServicoComponent implements OnInit {
   };
 
   constructor(
-  private router: Router,
-  private ordensService: OrdensServicoService,
-  private cdr: ChangeDetectorRef
-) {}
-
+    private router: Router,
+    private ordensService: OrdensServicoService,
+    private cdr: ChangeDetectorRef,
+    public authService: AuthService
+  ) {}
 
   ngOnInit(): void {
-  this.carregarResumo();
-  this.carregarOrdens();
-  this.carregarVeiculos();
-  this.carregarItens();
-}
+    this.carregarOrdens();
 
-validarNovaOrdem(): boolean {
-  this.errosCampos = {};
-
-  if (!this.novaOrdem.veiculoId) {
-    this.errosCampos['veiculoId'] = 'Selecione um veículo para criar a ordem.';
+    if (this.authService.isAdmin()) {
+      this.carregarResumo();
+      this.carregarVeiculos();
+      this.carregarItens();
+    }
   }
-
-  return Object.keys(this.errosCampos).length === 0;
-}
-
-validarItemOrdem(): boolean {
-  this.errosCampos = {};
-
-  if (!this.novoItem.itemId) {
-    this.errosCampos['itemId'] = 'Selecione um item.';
-  }
-
-  if (!this.novoItem.quantidade || Number(this.novoItem.quantidade) <= 0) {
-    this.errosCampos['quantidade'] = 'Informe uma quantidade maior que zero.';
-  }
-
-  return Object.keys(this.errosCampos).length === 0;
-}
-
 
   carregarResumo() {
-  this.ordensService.getResumo().subscribe({
-    next: (res) => {
-      this.resumo = res;
-      this.cdr.detectChanges();
-    },
-    error: (err) => {
-      console.log(err);
-      this.cdr.detectChanges();
+    if (!this.authService.isAdmin()) {
+      return;
     }
-  });
-}
 
+    this.ordensService.getResumo().subscribe({
+      next: (res) => {
+        this.resumo = res;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.log(err);
+        this.cdr.detectChanges();
+      }
+    });
+  }
 
   carregarOrdens() {
     this.ordensService.getOrdens().subscribe({
@@ -94,11 +77,16 @@ validarItemOrdem(): boolean {
       error: (err) => {
         console.log(err);
         this.erro = 'Erro ao carregar ordens de serviço';
+        this.cdr.detectChanges();
       }
     });
   }
 
   carregarVeiculos() {
+    if (!this.authService.isAdmin()) {
+      return;
+    }
+
     this.ordensService.getVeiculos().subscribe({
       next: (res) => {
         this.veiculos = res;
@@ -107,11 +95,16 @@ validarItemOrdem(): boolean {
       error: (err) => {
         console.log(err);
         this.erro = 'Erro ao carregar veículos';
+        this.cdr.detectChanges();
       }
     });
   }
 
   carregarItens() {
+    if (!this.authService.isAdmin()) {
+      return;
+    }
+
     this.ordensService.getItensDisponiveis().subscribe({
       next: (res) => {
         this.itensDisponiveis = res;
@@ -120,20 +113,40 @@ validarItemOrdem(): boolean {
       error: (err) => {
         console.log(err);
         this.erro = 'Erro ao carregar itens';
+        this.cdr.detectChanges();
       }
     });
+  }
+
+  validarNovaOrdem(): boolean {
+    this.errosCampos = {};
+
+    if (!this.novaOrdem.veiculoId) {
+      this.errosCampos['veiculoId'] = 'Selecione um veículo para criar a ordem.';
+    }
+
+    return Object.keys(this.errosCampos).length === 0;
+  }
+
+  validarItemOrdem(): boolean {
+    this.errosCampos = {};
+
+    if (!this.novoItem.itemId) {
+      this.errosCampos['itemId'] = 'Selecione um item.';
+    }
+
+    if (!this.novoItem.quantidade || Number(this.novoItem.quantidade) <= 0) {
+      this.errosCampos['quantidade'] = 'Informe uma quantidade maior que zero.';
+    }
+
+    return Object.keys(this.errosCampos).length === 0;
   }
 
   criarOrdem() {
     this.erro = '';
     this.sucesso = '';
+
     if (!this.validarNovaOrdem()) {
-  return;
-}
-
-
-    if (!this.novaOrdem.veiculoId) {
-      this.erro = 'Selecione um veículo para criar a ordem';
       return;
     }
 
@@ -142,6 +155,7 @@ validarItemOrdem(): boolean {
         this.sucesso = 'Ordem de serviço criada com sucesso!';
         this.novaOrdem = { veiculoId: '' };
         this.carregarOrdens();
+        this.carregarResumo();
       },
       error: (err) => {
         console.log(err);
@@ -151,6 +165,8 @@ validarItemOrdem(): boolean {
   }
 
   selecionarOrdem(ordem: OrdemServico) {
+    this.abaAtiva = 'dados';
+
     this.ordensService.getOrdemById(ordem.id).subscribe({
       next: (res) => {
         this.ordemSelecionada = res;
@@ -159,6 +175,7 @@ validarItemOrdem(): boolean {
       error: (err) => {
         console.log(err);
         this.erro = 'Erro ao buscar detalhes da ordem';
+        this.cdr.detectChanges();
       }
     });
   }
@@ -169,24 +186,20 @@ validarItemOrdem(): boolean {
       return;
     }
 
-    if (!this.novoItem.itemId) {
-      this.erro = 'Selecione um item';
-      return;
-    }
-
     this.erro = '';
     this.sucesso = '';
-    if (!this.validarItemOrdem()) {
-  return;
-}
 
+    if (!this.validarItemOrdem()) {
+      return;
+    }
 
     this.ordensService.addItem(this.ordemSelecionada.id, this.novoItem).subscribe({
       next: () => {
         this.sucesso = 'Item adicionado!';
         this.novoItem = { itemId: '', quantidade: 1 };
-        this.selecionarOrdem(this.ordemSelecionada!);
+        this.selecionarOrdem(this.ordemSelecionada);
         this.carregarOrdens();
+        this.carregarResumo();
       },
       error: (err) => {
         console.log(err);
@@ -195,54 +208,41 @@ validarItemOrdem(): boolean {
     });
   }
 
-    atualizarStatus(ordem: OrdemServico, novoStatus: string) {
-  this.erro = '';
-  this.sucesso = '';
+  atualizarStatus(ordem: OrdemServico, novoStatus: string) {
+    this.erro = '';
+    this.sucesso = '';
 
-  this.ordensService.atualizarStatus(ordem.id, novoStatus).subscribe({
-    next: () => {
-      this.sucesso = 'Status atualizado com sucesso!';
-      this.carregarOrdens();
-      this.carregarResumo();
+    this.ordensService.atualizarStatus(ordem.id, novoStatus).subscribe({
+      next: () => {
+        this.sucesso = 'Status atualizado com sucesso!';
+        this.carregarOrdens();
+        this.carregarResumo();
 
-      if (this.ordemSelecionada && this.ordemSelecionada.id === ordem.id) {
-        this.selecionarOrdem(ordem);
+        if (this.ordemSelecionada && this.ordemSelecionada.id === ordem.id) {
+          this.selecionarOrdem(ordem);
+        }
+      },
+      error: (err) => {
+        console.log(err);
+
+        if (typeof err?.error === 'string' && err.error.includes('ERR_003')) {
+          this.erro = 'Estoque indisponível para um ou mais itens desta ordem.';
+        } else if (typeof err?.error === 'string') {
+          this.erro = err.error;
+        } else {
+          this.erro = 'Erro ao atualizar status da ordem.';
+        }
+
+        setTimeout(() => {
+          if (typeof document !== 'undefined') {
+            document.getElementById('alerta-ordens')?.scrollIntoView({
+              behavior: 'smooth',
+              block: 'start'
+            });
+          }
+        }, 0);
       }
-    },
-    error: (err) => {
-      console.log(err);
-
-      if (typeof err?.error === 'string' && err.error.includes('ERR_003')) {
-        this.erro = 'Estoque indisponível para um ou mais itens desta ordem.';
-      } else if (typeof err?.error === 'string') {
-        this.erro = err.error;
-      } else {
-        this.erro = 'Erro ao atualizar status da ordem.';
-      }
-
-      setTimeout(() => {
-  if (typeof document !== 'undefined') {
-    document.getElementById('alerta-ordens')?.scrollIntoView({
-      behavior: 'smooth',
-      block: 'start'
     });
-  }
-}, 0);
-
-    }
-  });
-}
-
-
-  mostrarErro(mensagem: string) {
-    this.erro = mensagem;
-
-    setTimeout(() => {
-      document.getElementById('alerta-ordens')?.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start'
-      });
-    }, 50);
   }
 
   nomeVeiculo(veiculoId: string): string {
@@ -253,6 +253,14 @@ validarItemOrdem(): boolean {
     }
 
     return `${veiculo.placa} - ${veiculo.marca} ${veiculo.modelo}`;
+  }
+
+  nomeVeiculoDaOrdem(ordem: any): string {
+    if (ordem?.veiculo) {
+      return `${ordem.veiculo.placa} - ${ordem.veiculo.marca} ${ordem.veiculo.modelo}`;
+    }
+
+    return this.nomeVeiculo(ordem.veiculoId);
   }
 
   proximoStatus(statusAtual: string): string | null {
@@ -268,18 +276,15 @@ validarItemOrdem(): boolean {
   }
 
   itensPeca() {
-  return this.itensDisponiveis.filter(item => item.tipo === 'Peca');
-}
+    return this.itensDisponiveis.filter(item => item.tipo === 'Peca');
+  }
 
-itensServico() {
-  return this.itensDisponiveis.filter(item => item.tipo !== 'Peca');
-}
-
+  itensServico() {
+    return this.itensDisponiveis.filter(item => item.tipo !== 'Peca');
+  }
 
   logout() {
     localStorage.removeItem('token');
     this.router.navigate(['/login']);
   }
 }
-
-
