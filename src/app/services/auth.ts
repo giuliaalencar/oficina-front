@@ -24,6 +24,36 @@ export class AuthService {
     );
   }
 
+  getPayload(): any | null {
+  const token = this.getToken();
+
+  if (!token) {
+    return null;
+  }
+
+  try {
+    const payload = token.split('.')[1];
+    return JSON.parse(atob(payload));
+  } catch {
+    return null;
+  }
+}
+
+getPerfil(): string {
+  const payload = this.getPayload();
+
+  return payload?.['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] || '';
+}
+
+isAdmin(): boolean {
+  return this.getPerfil() === 'ADMIN';
+}
+
+isCliente(): boolean {
+  return this.getPerfil() === 'CLIENTE';
+}
+
+
   logout() {
     if (isPlatformBrowser(this.platformId)) {
       localStorage.removeItem('token');

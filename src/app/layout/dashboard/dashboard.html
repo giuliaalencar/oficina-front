@@ -2,6 +2,7 @@
   <aside class="sidebar">
     <div class="brand">
       <div class="brand-icon">OF</div>
+
       <div>
         <h4>Oficina</h4>
         <span>Gestão de serviços</span>
@@ -9,24 +10,39 @@
     </div>
 
     <nav class="menu">
-      <a routerLink="/clientes" routerLinkActive="active-link">
+      <a
+        *ngIf="authService.isAdmin()"
+        routerLink="/clientes"
+        routerLinkActive="active-link"
+      >
         <span>👤</span>
         Clientes
       </a>
 
-      <a routerLink="/veiculos" routerLinkActive="active-link">
+      <a
+        *ngIf="authService.isAdmin()"
+        routerLink="/veiculos"
+        routerLinkActive="active-link"
+      >
         <span>🚗</span>
         Veículos
       </a>
 
-      <a routerLink="/itens" routerLinkActive="active-link">
+      <a
+        *ngIf="authService.isAdmin()"
+        routerLink="/itens"
+        routerLinkActive="active-link"
+      >
         <span>🧰</span>
         Itens
       </a>
 
-      <a routerLink="/ordens-servico" routerLinkActive="active-link">
+      <a
+        routerLink="/ordens-servico"
+        routerLinkActive="active-link"
+      >
         <span>📝</span>
-        Ordens
+        {{ authService.isCliente() ? 'Minhas Ordens' : 'Ordens' }}
       </a>
     </nav>
 

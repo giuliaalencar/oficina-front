@@ -23,10 +23,14 @@ export class LoginComponent {
     console.log('SENHA:', this.senha);
 
     this.auth.login(this.email, this.senha).subscribe({
-      next: (res) => {
-        console.log('LOGIN OK', res);
-        this.router.navigate(['/clientes']);
-      },
+      next: () => {
+  if (this.auth.isCliente()) {
+    this.router.navigate(['/ordens-servico']);
+  } else {
+    this.router.navigate(['/clientes']);
+  }
+},
+
       error: (err) => {
   console.log('ERRO LOGIN:', err);
 
