@@ -1,0 +1,36 @@
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.card {
+  border: 1px solid #eadcf8 !important;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #d63384, #8b5cf6);
+  border: none;
+}
+
+.btn-primary:hover {
+  filter: brightness(0.95);
+}
+
+.form-control,
+.form-select {
+  border-color: #dfc8f3;
+  min-height: 46px;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: #b084f5;
+  box-shadow: 0 0 0 0.2rem rgba(176, 132, 245, 0.2);
+}
+
+.table-light th {
+  background-color: #f2ecff;
+}

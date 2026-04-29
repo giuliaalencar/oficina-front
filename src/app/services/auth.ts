@@ -1,56 +1,45 @@
-import { Injectable, inject, PLATFORM_ID } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Router } from '@angular/router';
-import { tap } from 'rxjs';
-import { isPlatformBrowser } from '@angular/common';
+import { Observable } from 'rxjs';
+
+export interface LoginRequest {
+  email: string;
+  senha: string;
+}
+
+export interface LoginResponse {
+  token: string;
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
   private apiUrl = 'https://oficina-api-10.onrender.com/api/auth';
-  private platformId = inject(PLATFORM_ID);
 
-  constructor(
-    private http: HttpClient,
-    private router: Router
-  ) {}
+  constructor(private http: HttpClient) {}
 
-  login(email: string, senha: string) {
-    return this.http.post<any>(`${this.apiUrl}/login`, { email, senha }).pipe(
-      tap(res => {
-        if (isPlatformBrowser(this.platformId)) {
-          localStorage.setItem('token', res.token);
-        }
-      })
-    );
+  login(dados: LoginRequest): Observable<LoginResponse> {
+    return this.http.post<LoginResponse>(`${this.apiUrl}/login`, dados);
   }
 
-  logout() {
-    if (isPlatformBrowser(this.platformId)) {
-      localStorage.removeItem('token');
-    }
-
-    this.router.navigate(['/login']);
-  }
-
-  isLoggedIn(): boolean {
-    if (isPlatformBrowser(this.platformId)) {
-      return !!localStorage.getItem('token');
-    }
-
-    return false;
+  salvarToken(token: string) {
+    localStorage.setItem('token', token);
   }
 
   getToken(): string | null {
-    if (isPlatformBrowser(this.platformId)) {
-      return localStorage.getItem('token');
-    }
-
-    return null;
+    return localStorage.getItem('token');
   }
 
-  getPayload(): any | null {
+  logout() {
+    localStorage.removeItem('token');
+  }
+
+  estaLogado(): boolean {
+    return !!this.getToken();
+  }
+
+  getUsuarioLogado(): any {
     const token = this.getToken();
 
     if (!token) {
@@ -59,23 +48,39 @@ export class AuthService {
 
     try {
       const payload = token.split('.')[1];
-      return JSON.parse(atob(payload));
+      const decoded = JSON.parse(atob(payload));
+
+      return decoded;
     } catch {
       return null;
     }
   }
 
   getPerfil(): string {
-    const payload = this.getPayload();
+    const usuario = this.getUsuarioLogado();
 
-    return payload?.['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] || '';
+    return (
+      usuario?.role ||
+      usuario?.perfil ||
+      usuario?.Perfil ||
+      usuario?.['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] ||
+      ''
+    );
   }
 
   isAdmin(): boolean {
     return this.getPerfil() === 'ADMIN';
   }
 
+  isFuncionario(): boolean {
+    return this.getPerfil() === 'FUNCIONARIO';
+  }
+
   isCliente(): boolean {
     return this.getPerfil() === 'CLIENTE';
+  }
+
+  podeGerenciarSistema(): boolean {
+    return this.isAdmin() || this.isFuncionario();
   }
 }

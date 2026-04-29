@@ -1,0 +1,118 @@
+<div class="container py-4">
+  <div class="page-header">
+    <div>
+      <h1 class="fw-bold mb-1">Usuários</h1>
+      <p class="text-muted mb-0">Cadastro e listagem de usuários do sistema</p>
+    </div>
+
+    <div class="d-flex gap-2">
+      <a routerLink="/clientes" class="btn btn-outline-secondary">Clientes</a>
+      <a routerLink="/veiculos" class="btn btn-outline-secondary">Veículos</a>
+      <a routerLink="/itens" class="btn btn-outline-secondary">Itens</a>
+      <a routerLink="/ordens-servico" class="btn btn-outline-secondary">Ordens</a>
+      <button class="btn btn-outline-danger" (click)="logout()">Sair</button>
+    </div>
+  </div>
+
+  <div *ngIf="erro" class="alert alert-danger shadow-sm">
+    {{ erro }}
+  </div>
+
+  <div *ngIf="sucesso" class="alert alert-success shadow-sm">
+    {{ sucesso }}
+  </div>
+
+  <div class="row g-4">
+    <div class="col-lg-4">
+      <div class="card shadow-sm border-0 rounded-4">
+        <div class="card-body p-4">
+          <h4 class="fw-semibold mb-3">Novo usuário</h4>
+
+          <div class="mb-3">
+            <label class="form-label">Nome</label>
+            <input
+              class="form-control"
+              [(ngModel)]="novoUsuario.nome"
+              placeholder="Digite o nome"
+            >
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input
+              class="form-control"
+              type="email"
+              [(ngModel)]="novoUsuario.email"
+              placeholder="Digite o email"
+            >
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Senha</label>
+            <input
+              class="form-control"
+              type="password"
+              [(ngModel)]="novoUsuario.senha"
+              placeholder="Digite a senha"
+            >
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Perfil</label>
+            <select class="form-select" [(ngModel)]="novoUsuario.perfil">
+              <option [ngValue]="1">Admin</option>
+              <option [ngValue]="2">Cliente</option>
+              <option [ngValue]="3">Funcionário</option>
+            </select>
+          </div>
+
+          <button class="btn btn-primary w-100" (click)="cadastrarUsuario()">
+            Cadastrar usuário
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-8">
+      <div class="card shadow-sm border-0 rounded-4">
+        <div class="card-body p-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="fw-semibold mb-0">Lista de usuários</h4>
+            <span class="badge text-bg-dark">{{ usuarios.length }} usuários</span>
+          </div>
+
+          <div class="table-responsive" *ngIf="usuarios.length > 0; else semUsuarios">
+            <table class="table align-middle table-hover">
+              <thead class="table-light">
+                <tr>
+                  <th>Nome</th>
+                  <th>Email</th>
+                  <th>Perfil</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                <tr *ngFor="let usuario of usuarios">
+                  <td class="fw-medium">{{ usuario.nome }}</td>
+                  <td>{{ usuario.email }}</td>
+                  <td>
+                    <span class="badge text-bg-secondary">
+                      {{ nomePerfil(usuario.perfil) }}
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <ng-template #semUsuarios>
+            <div class="text-center py-5 text-muted">
+              <h5 class="mb-2">Nenhum usuário cadastrado</h5>
+              <p class="mb-0">Cadastre o primeiro usuário usando o formulário ao lado.</p>
+            </div>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
