@@ -2,32 +2,34 @@
   <div class="page-header">
     <div class="page-title">
       <h1 class="fw-bold mb-1">
-        {{ authService.isCliente() ? 'Minhas Ordens' : 'Ordens de Serviço' }}
+        {{ modoFormulario ? 'Cadastrar Ordem' : (authService.isCliente() ? 'Minhas Ordens' : 'Ordens de Serviço') }}
       </h1>
       <p class="text-muted mb-0">
-        {{ authService.isCliente() ? 'Acompanhe suas ordens de serviço' : 'Gerencie o fluxo da oficina' }}
+        {{ modoFormulario ? 'Preencha os dados da nova ordem' : (authService.isCliente() ? 'Acompanhe suas ordens de serviço' : 'Gerencie o fluxo da oficina') }}
       </p>
     </div>
 
-    <svg class="page-illustration" viewBox="0 0 220 150" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect x="20" y="70" width="160" height="42" rx="18" fill="#8b5cf6"/>
-      <rect x="50" y="46" width="76" height="34" rx="12" fill="#f9a8d4"/>
-      <circle cx="58" cy="116" r="15" fill="#1f2937"/>
-      <circle cx="145" cy="116" r="15" fill="#1f2937"/>
-      <circle cx="58" cy="116" r="6" fill="#f8fafc"/>
-      <circle cx="145" cy="116" r="6" fill="#f8fafc"/>
-      <path d="M165 38l9 9 20-22" stroke="#22c55e" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
-
     <div class="d-flex gap-2">
-      <a *ngIf="authService.isAdmin()" routerLink="/clientes" class="btn btn-outline-secondary">Clientes</a>
-      <a *ngIf="authService.isAdmin()" routerLink="/veiculos" class="btn btn-outline-secondary">Veículos</a>
-      <a *ngIf="authService.isAdmin()" routerLink="/itens" class="btn btn-outline-secondary">Itens</a>
+      <button
+        *ngIf="!modoFormulario && authService.podeGerenciarSistema()"
+        class="btn btn-primary"
+        (click)="irParaCadastro()"
+      >
+        Nova ordem
+      </button>
+
+      <button *ngIf="modoFormulario" class="btn btn-outline-secondary" (click)="voltar()">
+        Voltar
+      </button>
+
+      <a *ngIf="authService.podeGerenciarSistema()" routerLink="/clientes" class="btn btn-outline-secondary">Clientes</a>
+      <a *ngIf="authService.podeGerenciarSistema()" routerLink="/veiculos" class="btn btn-outline-secondary">Veículos</a>
+      <a *ngIf="authService.podeGerenciarSistema()" routerLink="/itens" class="btn btn-outline-secondary">Itens</a>
       <button class="btn btn-outline-danger" (click)="logout()">Sair</button>
     </div>
   </div>
 
-  <div id="alerta-ordens" *ngIf="erro" class="alert alert-danger shadow-sm">
+  <div *ngIf="erro" class="alert alert-danger shadow-sm">
     {{ erro }}
   </div>
 
@@ -35,184 +37,118 @@
     {{ sucesso }}
   </div>
 
-  <div class="row g-3 mb-4" *ngIf="authService.isAdmin() && resumo">
-    <div class="col-md-4">
-      <div class="card metric-card">
-        <div class="card-body">
-          <span>Total de OS</span>
-          <strong>{{ resumo.totalOrdens }}</strong>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-md-4">
-      <div class="card metric-card">
-        <div class="card-body">
-          <span>Finalizadas</span>
-          <strong>{{ resumo.ordensFinalizadas }}</strong>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-md-4">
-      <div class="card metric-card">
-        <div class="card-body">
-          <span>Tempo médio</span>
-          <strong>{{ resumo.tempoMedioHoras }}h</strong>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="row g-4">
-    <div class="col-lg-4" *ngIf="authService.isAdmin()">
-      <div class="card shadow-sm border-0 rounded-4">
-        <div class="card-body p-4">
-          <h4 class="fw-semibold mb-3">Nova ordem</h4>
-
-          <div class="mb-3">
-            <label class="form-label">Veículo</label>
-            <select [(ngModel)]="novaOrdem.veiculoId" class="form-select">
-              <option value="">Selecione um veículo</option>
-              <option *ngFor="let veiculo of veiculos" [value]="veiculo.id">
-                {{ veiculo.placa }} - {{ veiculo.marca }} {{ veiculo.modelo }}
-              </option>
-            </select>
-
-            <div class="field-error" *ngIf="errosCampos['veiculoId']">
-              {{ errosCampos['veiculoId'] }}
-            </div>
+  <div *ngIf="!modoFormulario">
+    <div class="row g-3 mb-4" *ngIf="authService.podeGerenciarSistema() && resumo">
+      <div class="col-md-4">
+        <div class="card metric-card">
+          <div class="card-body">
+            <span>Total de OS</span>
+            <strong>{{ resumo.totalOrdens }}</strong>
           </div>
+        </div>
+      </div>
 
-          <button class="btn btn-primary w-100" (click)="criarOrdem()">
-            Criar ordem
-          </button>
+      <div class="col-md-4">
+        <div class="card metric-card">
+          <div class="card-body">
+            <span>Finalizadas</span>
+            <strong>{{ resumo.ordensFinalizadas }}</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="card metric-card">
+          <div class="card-body">
+            <span>Tempo médio</span>
+            <strong>{{ resumo.tempoMedioHoras }}h</strong>
+          </div>
         </div>
       </div>
     </div>
 
-    <div [class.col-lg-8]="authService.isAdmin()" [class.col-lg-12]="authService.isCliente()">
-      <div class="card shadow-sm border-0 rounded-4">
-        <div class="card-body p-4">
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <h4 class="fw-semibold mb-0">
-              {{ authService.isCliente() ? 'Minhas ordens' : 'Lista de ordens' }}
-            </h4>
-            <span class="badge text-bg-dark">{{ ordens.length }} ordens</span>
-          </div>
-
-          <div class="table-responsive" *ngIf="ordens.length > 0; else semOrdens">
-            <table class="table align-middle table-hover">
-              <thead class="table-light">
-                <tr>
-                  <th>ID</th>
-                  <th>Veículo</th>
-                  <th>Data</th>
-                  <th>Status</th>
-                  <th>Valor Total</th>
-                  <th class="text-center">Ações</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                <tr *ngFor="let ordem of ordens">
-                  <td>#{{ ordem.id }}</td>
-                  <td>{{ nomeVeiculoDaOrdem(ordem) }}</td>
-                  <td>{{ ordem.dataEntrada | date:'short' }}</td>
-                  <td>
-                    <span class="badge text-bg-secondary">{{ ordem.status }}</span>
-                  </td>
-                  <td>{{ ordem.valorTotal | currency:'BRL' }}</td>
-                  <td class="text-center">
-                    <div class="d-flex justify-content-center gap-2 flex-wrap">
-                      <button class="btn btn-sm btn-primary" (click)="selecionarOrdem(ordem)">
-                        Ver detalhes
-                      </button>
-
-                      <button
-                        *ngIf="authService.isAdmin() && proximoStatus(ordem.status)"
-                        class="btn btn-sm btn-warning"
-                        (click)="atualizarStatus(ordem, proximoStatus(ordem.status)!)"
-                      >
-                        Avançar
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <ng-template #semOrdens>
-            <div class="text-center py-5 text-muted">
-              <h5 class="mb-2">Nenhuma ordem encontrada</h5>
-              <p class="mb-0">
-                {{ authService.isCliente() ? 'Você ainda não possui ordens vinculadas ao seu usuário.' : 'Crie a primeira ordem de serviço usando o formulário ao lado.' }}
-              </p>
-            </div>
-          </ng-template>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div *ngIf="ordemSelecionada" class="mt-5">
     <div class="card shadow-sm border-0 rounded-4">
       <div class="card-body p-4">
         <div class="d-flex justify-content-between align-items-center mb-3">
-          <h4 class="fw-semibold mb-0">Detalhes da ordem #{{ ordemSelecionada.id }}</h4>
-          <span class="badge text-bg-secondary">{{ ordemSelecionada.status }}</span>
+          <h4 class="fw-semibold mb-0">
+            {{ authService.isCliente() ? 'Minhas ordens' : 'Lista de ordens' }}
+          </h4>
+          <span class="badge text-bg-dark">{{ ordens.length }} ordens</span>
         </div>
 
-        <ul class="nav nav-tabs mb-4">
-          <li class="nav-item">
-            <button class="nav-link" [class.active]="abaAtiva === 'dados'" (click)="abaAtiva = 'dados'">
-              Dados Gerais
-            </button>
-          </li>
+        <div class="table-responsive" *ngIf="ordens.length > 0; else semOrdens">
+          <table class="table align-middle table-hover">
+            <thead class="table-light">
+              <tr>
+                <th>ID</th>
+                <th>Veículo</th>
+                <th>Data</th>
+                <th>Status</th>
+                <th>Valor Total</th>
+                <th class="text-center">Ações</th>
+              </tr>
+            </thead>
 
-          <li class="nav-item" *ngIf="authService.isAdmin()">
-            <button class="nav-link" [class.active]="abaAtiva === 'servicos'" (click)="abaAtiva = 'servicos'">
-              Serviços
-            </button>
-          </li>
+            <tbody>
+              <tr *ngFor="let ordem of ordens">
+                <td>#{{ ordem.id }}</td>
+                <td>{{ nomeVeiculoDaOrdem(ordem) }}</td>
+                <td>{{ ordem.dataEntrada | date:'short' }}</td>
+                <td>
+                  <span class="badge text-bg-secondary">{{ ordem.status }}</span>
+                </td>
+                <td>{{ ordem.valorTotal | currency:'BRL' }}</td>
+                <td class="text-center">
+                  <div class="d-flex justify-content-center gap-2 flex-wrap">
+                    <button class="btn btn-sm btn-primary" (click)="selecionarOrdem(ordem)">
+                      Ver detalhes
+                    </button>
 
-          <li class="nav-item" *ngIf="authService.isAdmin()">
-            <button class="nav-link" [class.active]="abaAtiva === 'pecas'" (click)="abaAtiva = 'pecas'">
-              Peças
-            </button>
-          </li>
+                    <button
+                      *ngIf="authService.podeGerenciarSistema() && proximoStatus(ordem.status)"
+                      class="btn btn-sm btn-warning"
+                      (click)="atualizarStatus(ordem, proximoStatus(ordem.status)!)"
+                    >
+                      Avançar
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
-          <li class="nav-item">
-            <button class="nav-link" [class.active]="abaAtiva === 'resumo'" (click)="abaAtiva = 'resumo'">
-              Resumo
-            </button>
-          </li>
-        </ul>
-
-        <div *ngIf="abaAtiva === 'dados'">
-          <div class="row mb-4">
-            <div class="col-md-6">
-              <p class="mb-1"><strong>Veículo:</strong> {{ nomeVeiculoDaOrdem(ordemSelecionada) }}</p>
-              <p class="mb-1"><strong>Data:</strong> {{ ordemSelecionada.dataEntrada | date:'short' }}</p>
-              <p class="mb-1"><strong>Status:</strong> {{ ordemSelecionada.status }}</p>
-            </div>
-
-            <div class="col-md-6 text-md-end">
-              <p class="mb-1"><strong>Valor total:</strong></p>
-              <h4 class="fw-bold text-success">{{ ordemSelecionada.valorTotal | currency:'BRL' }}</h4>
-            </div>
+        <ng-template #semOrdens>
+          <div class="text-center py-5 text-muted">
+            <h5 class="mb-2">Nenhuma ordem encontrada</h5>
+            <p class="mb-0">
+              {{ authService.isCliente() ? 'Você ainda não possui ordens vinculadas ao seu usuário.' : 'Clique em Nova ordem para cadastrar.' }}
+            </p>
           </div>
-        </div>
+        </ng-template>
+      </div>
+    </div>
 
-        <div *ngIf="abaAtiva === 'resumo'">
-          <h5 class="fw-semibold mb-3">Itens da ordem</h5>
+    <div *ngIf="ordemSelecionada" class="mt-5">
+      <div class="card shadow-sm border-0 rounded-4">
+        <div class="card-body p-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="fw-semibold mb-0">Detalhes da ordem #{{ ordemSelecionada.id }}</h4>
+            <span class="badge text-bg-secondary">{{ ordemSelecionada.status }}</span>
+          </div>
+
+          <p><strong>Veículo:</strong> {{ nomeVeiculoDaOrdem(ordemSelecionada) }}</p>
+          <p><strong>Data:</strong> {{ ordemSelecionada.dataEntrada | date:'short' }}</p>
+          <p><strong>Status:</strong> {{ ordemSelecionada.status }}</p>
+          <p><strong>Valor total:</strong> {{ ordemSelecionada.valorTotal | currency:'BRL' }}</p>
+
+          <h5 class="fw-semibold mt-4 mb-3">Itens da ordem</h5>
 
           <div class="table-responsive" *ngIf="(ordemSelecionada.itens?.length || 0) > 0; else semItens">
             <table class="table align-middle table-hover">
               <thead class="table-light">
                 <tr>
-                  <th>Item ID</th>
+                  <th>Descrição</th>
                   <th>Quantidade</th>
                   <th>Valor Unitário</th>
                   <th>Total</th>
@@ -221,7 +157,7 @@
 
               <tbody>
                 <tr *ngFor="let item of ordemSelecionada.itens">
-                  <td>#{{ item.itemId }}</td>
+                  <td>{{ item.descricao || ('Item #' + item.itemId) }}</td>
                   <td>{{ item.quantidade }}</td>
                   <td>{{ item.valor | currency:'BRL' }}</td>
                   <td>{{ item.valor * item.quantidade | currency:'BRL' }}</td>
@@ -231,10 +167,40 @@
           </div>
 
           <ng-template #semItens>
-            <div class="text-center py-4 text-muted">
-              <p class="mb-0">Nenhum item adicionado nesta ordem ainda.</p>
-            </div>
+            <p class="text-muted mb-0">Nenhum item adicionado nesta ordem ainda.</p>
           </ng-template>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="modoFormulario">
+    <div class="card shadow-sm border-0 rounded-4">
+      <div class="card-body p-4">
+        <h4 class="fw-semibold mb-3">Nova ordem</h4>
+
+        <div class="mb-3">
+          <label class="form-label">Veículo</label>
+          <select [(ngModel)]="novaOrdem.veiculoId" class="form-select">
+            <option value="">Selecione um veículo</option>
+            <option *ngFor="let veiculo of veiculos" [value]="veiculo.id">
+              {{ veiculo.placa }} - {{ veiculo.marca }} {{ veiculo.modelo }}
+            </option>
+          </select>
+
+          <div class="field-error" *ngIf="errosCampos['veiculoId']">
+            {{ errosCampos['veiculoId'] }}
+          </div>
+        </div>
+
+        <div class="d-flex gap-2">
+          <button class="btn btn-primary" (click)="criarOrdem()">
+            Cadastrar
+          </button>
+
+          <button class="btn btn-outline-secondary" (click)="voltar()">
+            Cancelar
+          </button>
         </div>
       </div>
     </div>

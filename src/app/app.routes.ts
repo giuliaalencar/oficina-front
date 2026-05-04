@@ -40,7 +40,15 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/ordens-servico/ordens-servico').then(m => m.OrdensServicoComponent)
       },
       {
+        path: 'ordens-servico/cadastro',
+        loadComponent: () => import('./pages/ordens-servico/ordens-servico').then(m => m.OrdensServicoComponent)
+      },
+      {
         path: 'usuarios',
+        loadComponent: () => import('./pages/usuarios/usuarios').then(m => m.UsuariosComponent)
+      },
+      {
+        path: 'usuarios/cadastro',
         loadComponent: () => import('./pages/usuarios/usuarios').then(m => m.UsuariosComponent)
       },
       {

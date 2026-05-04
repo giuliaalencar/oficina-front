@@ -13,6 +13,7 @@ import { UsuariosService, Usuario } from '../../services/usuarios';
 })
 export class UsuariosComponent implements OnInit {
   usuarios: Usuario[] = [];
+  modoFormulario = false;
 
   erro = '';
   sucesso = '';
@@ -31,7 +32,11 @@ export class UsuariosComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.carregarUsuarios();
+    this.modoFormulario = this.router.url.startsWith('/usuarios/cadastro');
+
+    if (!this.modoFormulario) {
+      this.carregarUsuarios();
+    }
   }
 
   carregarUsuarios() {
@@ -73,20 +78,14 @@ export class UsuariosComponent implements OnInit {
     }
 
     this.usuariosService.criarUsuario({
-      nome: this.novoUsuario.nome,
-      email: this.novoUsuario.email,
+      nome: this.novoUsuario.nome.trim(),
+      email: this.novoUsuario.email.trim(),
       senha: this.novoUsuario.senha,
       perfil: Number(this.novoUsuario.perfil)
     }).subscribe({
       next: () => {
         this.sucesso = 'Usuário cadastrado com sucesso!';
-        this.novoUsuario = {
-          nome: '',
-          email: '',
-          senha: '',
-          perfil: 2
-        };
-        this.carregarUsuarios();
+        this.router.navigate(['/usuarios']);
       },
       error: (err) => {
         console.log(err);
@@ -101,6 +100,14 @@ export class UsuariosComponent implements OnInit {
     if (perfil === 'CLIENTE') return 'Cliente';
 
     return perfil;
+  }
+
+  irParaCadastro() {
+    this.router.navigate(['/usuarios/cadastro']);
+  }
+
+  voltar() {
+    this.router.navigate(['/usuarios']);
   }
 
   logout() {

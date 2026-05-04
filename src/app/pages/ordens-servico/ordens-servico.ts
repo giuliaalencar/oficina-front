@@ -19,6 +19,7 @@ export class OrdensServicoComponent implements OnInit {
   ordemSelecionada: any = null;
   resumo: ResumoOrdens | null = null;
 
+  modoFormulario = false;
   abaAtiva = 'dados';
 
   erro = '';
@@ -42,17 +43,23 @@ export class OrdensServicoComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.carregarOrdens();
+    this.modoFormulario = this.router.url.startsWith('/ordens-servico/cadastro');
 
-    if (this.authService.isAdmin()) {
-      this.carregarResumo();
+    if (this.modoFormulario) {
       this.carregarVeiculos();
       this.carregarItens();
+      return;
+    }
+
+    this.carregarOrdens();
+
+    if (this.authService.podeGerenciarSistema()) {
+      this.carregarResumo();
     }
   }
 
   carregarResumo() {
-    if (!this.authService.isAdmin()) {
+    if (!this.authService.podeGerenciarSistema()) {
       return;
     }
 
@@ -83,7 +90,7 @@ export class OrdensServicoComponent implements OnInit {
   }
 
   carregarVeiculos() {
-    if (!this.authService.isAdmin()) {
+    if (!this.authService.podeGerenciarSistema()) {
       return;
     }
 
@@ -101,7 +108,7 @@ export class OrdensServicoComponent implements OnInit {
   }
 
   carregarItens() {
-    if (!this.authService.isAdmin()) {
+    if (!this.authService.podeGerenciarSistema()) {
       return;
     }
 
@@ -152,10 +159,7 @@ export class OrdensServicoComponent implements OnInit {
 
     this.ordensService.criarOrdem(this.novaOrdem).subscribe({
       next: () => {
-        this.sucesso = 'Ordem de serviço criada com sucesso!';
-        this.novaOrdem = { veiculoId: '' };
-        this.carregarOrdens();
-        this.carregarResumo();
+        this.router.navigate(['/ordens-servico']);
       },
       error: (err) => {
         console.log(err);
@@ -232,15 +236,6 @@ export class OrdensServicoComponent implements OnInit {
         } else {
           this.erro = 'Erro ao atualizar status da ordem.';
         }
-
-        setTimeout(() => {
-          if (typeof document !== 'undefined') {
-            document.getElementById('alerta-ordens')?.scrollIntoView({
-              behavior: 'smooth',
-              block: 'start'
-            });
-          }
-        }, 0);
       }
     });
   }
@@ -275,12 +270,12 @@ export class OrdensServicoComponent implements OnInit {
     return fluxo[statusAtual] || null;
   }
 
-  itensPeca() {
-    return this.itensDisponiveis.filter(item => item.tipo === 'Peca');
+  irParaCadastro() {
+    this.router.navigate(['/ordens-servico/cadastro']);
   }
 
-  itensServico() {
-    return this.itensDisponiveis.filter(item => item.tipo !== 'Peca');
+  voltar() {
+    this.router.navigate(['/ordens-servico']);
   }
 
   logout() {
