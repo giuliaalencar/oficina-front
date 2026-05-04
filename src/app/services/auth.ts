@@ -27,6 +27,10 @@ export class AuthService {
     localStorage.setItem('token', token);
   }
 
+  saveToken(token: string) {
+    this.salvarToken(token);
+  }
+
   getToken(): string | null {
     return localStorage.getItem('token');
   }
@@ -37,6 +41,10 @@ export class AuthService {
 
   estaLogado(): boolean {
     return !!this.getToken();
+  }
+
+  isLoggedIn(): boolean {
+    return this.estaLogado();
   }
 
   getUsuarioLogado(): any {
