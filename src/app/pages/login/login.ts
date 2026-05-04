@@ -1,13 +1,13 @@
 import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { AuthService } from '../../services/auth';
-import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { AuthService } from '../../services/auth';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [FormsModule, CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './login.html',
   styleUrl: './login.css'
 })
@@ -15,42 +15,66 @@ export class LoginComponent {
   email = '';
   senha = '';
   erro = '';
+  carregando = false;
 
-  constructor(private auth: AuthService, private router: Router) {}
+  constructor(
+    private auth: AuthService,
+    private router: Router
+  ) {}
 
   entrar() {
-    console.log('EMAIL:', this.email);
-    console.log('SENHA:', this.senha);
+    this.erro = '';
+
+    if (!this.email.trim()) {
+      this.erro = 'Digite seu email.';
+      return;
+    }
+
+    if (!this.senha.trim()) {
+      this.erro = 'Digite sua senha.';
+      return;
+    }
+
+    this.carregando = true;
 
     this.auth.login({
-  email: this.email,
-  senha: this.senha
-}).subscribe({
+      email: this.email.trim(),
+      senha: this.senha
+    }).subscribe({
+      next: (res) => {
+        this.carregando = false;
 
-      next: () => {
-  if (this.auth.isCliente()) {
-    this.router.navigate(['/ordens-servico']);
-  } else {
-    this.router.navigate(['/clientes']);
-  }
-},
+        if (!res?.token) {
+          this.erro = 'Login realizado, mas o token não foi retornado.';
+          return;
+        }
 
+        this.auth.salvarToken(res.token);
+
+        if (this.auth.isCliente()) {
+          this.router.navigate(['/ordens-servico']);
+          return;
+        }
+
+        this.router.navigate(['/clientes']);
+      },
       error: (err) => {
-  console.log('ERRO LOGIN:', err);
+        this.carregando = false;
 
-  if (err.status === 0) {
-    this.erro = 'Não foi possível conectar à API. Aguarde alguns segundos e tente novamente.';
-    return;
-  }
+        console.log('ERRO LOGIN:', err);
 
-  if (typeof err?.error === 'string') {
-    this.erro = err.error;
-    return;
-  }
+        if (err.status === 0) {
+          this.erro = 'Não foi possível conectar com a API. Aguarde alguns segundos e tente novamente.';
+          return;
+        }
 
-  this.erro = 'Email ou senha inválidos.';
-}
+        if (err.status === 401) {
+          this.erro = 'Email ou senha inválidos.';
+          return;
+        }
 
+        this.erro = err?.error || 'Erro ao fazer login.';
+      }
     });
   }
 }
