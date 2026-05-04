@@ -1,5 +1,5 @@
-import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from '../../services/auth';
 
@@ -12,12 +12,28 @@ import { AuthService } from '../../services/auth';
 })
 export class DashboardComponent {
   constructor(
-    private router: Router,
-    public authService: AuthService
+    public auth: AuthService,
+    private router: Router
   ) {}
 
+  isAdmin(): boolean {
+    return this.auth.isAdmin();
+  }
+
+  isFuncionario(): boolean {
+    return this.auth.isFuncionario();
+  }
+
+  isCliente(): boolean {
+    return this.auth.isCliente();
+  }
+
+  podeGerenciarSistema(): boolean {
+    return this.auth.podeGerenciarSistema();
+  }
+
   logout() {
-    localStorage.removeItem('token');
+    this.auth.logout();
     this.router.navigate(['/login']);
   }
 }

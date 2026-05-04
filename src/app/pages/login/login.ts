@@ -22,7 +22,11 @@ export class LoginComponent {
     console.log('EMAIL:', this.email);
     console.log('SENHA:', this.senha);
 
-    this.auth.login(this.email, this.senha).subscribe({
+    this.auth.login({
+  email: this.email,
+  senha: this.senha
+}).subscribe({
+
       next: () => {
   if (this.auth.isCliente()) {
     this.router.navigate(['/ordens-servico']);

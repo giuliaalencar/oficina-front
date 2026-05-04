@@ -48,9 +48,8 @@ export class AuthService {
 
     try {
       const payload = token.split('.')[1];
-      const decoded = JSON.parse(atob(payload));
-
-      return decoded;
+      const base64 = payload.replace(/-/g, '+').replace(/_/g, '/');
+      return JSON.parse(atob(base64));
     } catch {
       return null;
     }
@@ -59,13 +58,14 @@ export class AuthService {
   getPerfil(): string {
     const usuario = this.getUsuarioLogado();
 
-    return (
-      usuario?.role ||
+    const perfil =
       usuario?.perfil ||
+      usuario?.role ||
       usuario?.Perfil ||
       usuario?.['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] ||
-      ''
-    );
+      '';
+
+    return String(perfil).toUpperCase();
   }
 
   isAdmin(): boolean {

@@ -1,49 +1,66 @@
 <div class="app-shell">
   <aside class="sidebar">
     <div class="brand">
-      <div class="brand-icon">OF</div>
+      <div class="brand-mark">OF</div>
 
       <div>
-        <h4>Oficina</h4>
-        <span>Gestão de serviços</span>
+        <h1>Oficina</h1>
+        <p>Gestão de serviços</p>
       </div>
     </div>
 
     <nav class="menu">
       <a
-        *ngIf="authService.isAdmin()"
+        *ngIf="podeGerenciarSistema()"
         routerLink="/clientes"
-        routerLinkActive="active-link"
+        routerLinkActive="active"
+        class="menu-link"
       >
         <span>👤</span>
         Clientes
       </a>
 
       <a
-        *ngIf="authService.isAdmin()"
+        *ngIf="podeGerenciarSistema()"
         routerLink="/veiculos"
-        routerLinkActive="active-link"
+        routerLinkActive="active"
+        class="menu-link"
       >
-        <span>🚗</span>
+        <span>🚙</span>
         Veículos
       </a>
 
       <a
-        *ngIf="authService.isAdmin()"
+        *ngIf="podeGerenciarSistema()"
         routerLink="/itens"
-        routerLinkActive="active-link"
+        routerLinkActive="active"
+        class="menu-link"
       >
         <span>🧰</span>
         Itens
       </a>
 
-      <a routerLink="/ordens-servico" routerLinkActive="active-link">
+      <a
+        routerLink="/ordens-servico"
+        routerLinkActive="active"
+        class="menu-link"
+      >
         <span>📝</span>
-        {{ authService.isCliente() ? 'Minhas Ordens' : 'Ordens' }}
+        {{ isCliente() ? 'Minhas Ordens' : 'Ordens' }}
+      </a>
+
+      <a
+        *ngIf="isAdmin()"
+        routerLink="/usuarios"
+        routerLinkActive="active"
+        class="menu-link"
+      >
+        <span>🔐</span>
+        Usuários
       </a>
     </nav>
 
-    <button class="logout-btn" type="button" (click)="logout()">
+    <button class="logout-button" (click)="logout()">
       Sair
     </button>
   </aside>
