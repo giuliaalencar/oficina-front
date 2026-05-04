@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { Injectable, PLATFORM_ID, inject } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
@@ -16,14 +17,23 @@ export interface LoginResponse {
 })
 export class AuthService {
   private apiUrl = 'https://oficina-api-10.onrender.com/api/auth';
+  private platformId = inject(PLATFORM_ID);
 
   constructor(private http: HttpClient) {}
+
+  private estaNoNavegador(): boolean {
+    return isPlatformBrowser(this.platformId);
+  }
 
   login(dados: LoginRequest): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(`${this.apiUrl}/login`, dados);
   }
 
   salvarToken(token: string) {
+    if (!this.estaNoNavegador()) {
+      return;
+    }
+
     localStorage.setItem('token', token);
   }
 
@@ -32,10 +42,18 @@ export class AuthService {
   }
 
   getToken(): string | null {
+    if (!this.estaNoNavegador()) {
+      return null;
+    }
+
     return localStorage.getItem('token');
   }
 
   logout() {
+    if (!this.estaNoNavegador()) {
+      return;
+    }
+
     localStorage.removeItem('token');
   }
 
