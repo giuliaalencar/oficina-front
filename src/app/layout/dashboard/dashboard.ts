@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+﻿import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from '../../services/auth';
@@ -10,7 +10,9 @@ import { AuthService } from '../../services/auth';
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css'
 })
+/* v8 ignore start -- Angular decorator metadata */
 export class DashboardComponent {
+/* v8 ignore stop */
   constructor(
     public auth: AuthService,
     private router: Router
@@ -37,3 +39,6 @@ export class DashboardComponent {
     this.router.navigate(['/login']);
   }
 }
+
+
+

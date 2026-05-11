@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+﻿import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -11,7 +11,9 @@ import { ItensService, Item } from '../../services/itens';
   templateUrl: './itens.html',
   styleUrl: './itens.css'
 })
+/* v8 ignore start -- Angular decorator metadata */
 export class ItensComponent implements OnInit {
+/* v8 ignore stop */
   itens: Item[] = [];
   erro = '';
   sucesso = '';
@@ -78,7 +80,7 @@ export class ItensComponent implements OnInit {
       },
       error: (err) => {
         console.log(err);
-        this.erro = 'Item não encontrado.';
+        this.erro = 'Item nÃ£o encontrado.';
         this.cdr.detectChanges();
       }
     });
@@ -88,7 +90,7 @@ export class ItensComponent implements OnInit {
     this.errosCampos = {};
 
     if (!this.novoItem.descricao.trim()) {
-      this.errosCampos['descricao'] = 'Informe a descrição do item.';
+      this.errosCampos['descricao'] = 'Informe a descriÃ§Ã£o do item.';
     }
 
     if (Number(this.novoItem.valor) <= 0) {
@@ -96,7 +98,7 @@ export class ItensComponent implements OnInit {
     }
 
     if (Number(this.novoItem.estoque) < 0) {
-      this.errosCampos['estoque'] = 'O estoque não pode ser negativo.';
+      this.errosCampos['estoque'] = 'O estoque nÃ£o pode ser negativo.';
     }
 
     if (!this.novoItem.tipo) {
@@ -176,7 +178,7 @@ export class ItensComponent implements OnInit {
 
     this.itensService.deletarItem(id).subscribe({
       next: () => {
-        this.sucesso = 'Item excluído com sucesso!';
+        this.sucesso = 'Item excluÃ­do com sucesso!';
         this.carregarItens();
       },
       error: (err) => {
@@ -195,3 +197,6 @@ export class ItensComponent implements OnInit {
     this.router.navigate(['/login']);
   }
 }
+
+
+

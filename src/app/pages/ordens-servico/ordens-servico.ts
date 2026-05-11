@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+﻿import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -12,7 +12,9 @@ import { OrdensServicoService, OrdemServico, ResumoOrdens } from '../../services
   templateUrl: './ordens-servico.html',
   styleUrl: './ordens-servico.css'
 })
+/* v8 ignore start -- Angular decorator metadata */
 export class OrdensServicoComponent implements OnInit {
+/* v8 ignore stop */
   ordens: OrdemServico[] = [];
   veiculos: any[] = [];
   itensDisponiveis: any[] = [];
@@ -83,7 +85,7 @@ export class OrdensServicoComponent implements OnInit {
       },
       error: (err) => {
         console.log(err);
-        this.erro = 'Erro ao carregar ordens de serviço';
+        this.erro = 'Erro ao carregar ordens de serviÃ§o';
         this.cdr.detectChanges();
       }
     });
@@ -101,7 +103,7 @@ export class OrdensServicoComponent implements OnInit {
       },
       error: (err) => {
         console.log(err);
-        this.erro = 'Erro ao carregar veículos';
+        this.erro = 'Erro ao carregar veÃ­culos';
         this.cdr.detectChanges();
       }
     });
@@ -129,7 +131,7 @@ export class OrdensServicoComponent implements OnInit {
     this.errosCampos = {};
 
     if (!this.novaOrdem.veiculoId) {
-      this.errosCampos['veiculoId'] = 'Selecione um veículo para criar a ordem.';
+      this.errosCampos['veiculoId'] = 'Selecione um veÃ­culo para criar a ordem.';
     }
 
     return Object.keys(this.errosCampos).length === 0;
@@ -163,7 +165,7 @@ export class OrdensServicoComponent implements OnInit {
       },
       error: (err) => {
         console.log(err);
-        this.erro = err?.error || 'Erro ao criar ordem de serviço';
+        this.erro = err?.error || 'Erro ao criar ordem de serviÃ§o';
       }
     });
   }
@@ -230,7 +232,7 @@ export class OrdensServicoComponent implements OnInit {
         console.log(err);
 
         if (typeof err?.error === 'string' && err.error.includes('ERR_003')) {
-          this.erro = 'Estoque indisponível para um ou mais itens desta ordem.';
+          this.erro = 'Estoque indisponÃ­vel para um ou mais itens desta ordem.';
         } else if (typeof err?.error === 'string') {
           this.erro = err.error;
         } else {
@@ -244,7 +246,7 @@ export class OrdensServicoComponent implements OnInit {
     const veiculo = this.veiculos.find(v => v.id === veiculoId);
 
     if (!veiculo) {
-      return 'Veículo não encontrado';
+      return 'VeÃ­culo nÃ£o encontrado';
     }
 
     return `${veiculo.placa} - ${veiculo.marca} ${veiculo.modelo}`;
@@ -260,10 +262,10 @@ export class OrdensServicoComponent implements OnInit {
 
   proximoStatus(statusAtual: string): string | null {
     const fluxo: Record<string, string> = {
-      'Recebida': 'Em Diagnóstico',
-      'Em Diagnóstico': 'Aguardando Aprovação',
-      'Aguardando Aprovação': 'Em Execução',
-      'Em Execução': 'Finalizada',
+      'Recebida': 'Em DiagnÃ³stico',
+      'Em DiagnÃ³stico': 'Aguardando AprovaÃ§Ã£o',
+      'Aguardando AprovaÃ§Ã£o': 'Em ExecuÃ§Ã£o',
+      'Em ExecuÃ§Ã£o': 'Finalizada',
       'Finalizada': 'Entregue'
     };
 
@@ -283,3 +285,6 @@ export class OrdensServicoComponent implements OnInit {
     this.router.navigate(['/login']);
   }
 }
+
+
+

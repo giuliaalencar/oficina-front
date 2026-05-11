@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+﻿import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -11,7 +11,9 @@ import { VeiculosService, Veiculo } from '../../services/veiculos';
   templateUrl: './veiculos.html',
   styleUrl: './veiculos.css'
 })
+/* v8 ignore start -- Angular decorator metadata */
 export class VeiculosComponent implements OnInit {
+/* v8 ignore stop */
   veiculos: Veiculo[] = [];
   clientes: any[] = [];
 
@@ -62,7 +64,7 @@ export class VeiculosComponent implements OnInit {
       },
       error: (err) => {
         console.log(err);
-        this.erro = 'Erro ao carregar veículos';
+        this.erro = 'Erro ao carregar veÃ­culos';
         this.cdr.detectChanges();
       }
     });
@@ -96,7 +98,7 @@ export class VeiculosComponent implements OnInit {
       },
       error: (err) => {
         console.log(err);
-        this.erro = 'Veículo não encontrado.';
+        this.erro = 'VeÃ­culo nÃ£o encontrado.';
         this.cdr.detectChanges();
       }
     });
@@ -114,21 +116,21 @@ export class VeiculosComponent implements OnInit {
     }
 
     if (!this.novoVeiculo.placa.trim()) {
-      this.errosCampos['placa'] = 'Informe a placa do veículo.';
+      this.errosCampos['placa'] = 'Informe a placa do veÃ­culo.';
     } else if (!placaAntiga.test(placa) && !placaMercosul.test(placa)) {
-      this.errosCampos['placa'] = 'Formato de placa inválido.';
+      this.errosCampos['placa'] = 'Formato de placa invÃ¡lido.';
     }
 
     if (!this.novoVeiculo.marca.trim()) {
-      this.errosCampos['marca'] = 'Informe a marca do veículo.';
+      this.errosCampos['marca'] = 'Informe a marca do veÃ­culo.';
     }
 
     if (!this.novoVeiculo.modelo.trim()) {
-      this.errosCampos['modelo'] = 'Informe o modelo do veículo.';
+      this.errosCampos['modelo'] = 'Informe o modelo do veÃ­culo.';
     }
 
     if (!this.novoVeiculo.ano || Number(this.novoVeiculo.ano) <= 0) {
-      this.errosCampos['ano'] = 'Informe um ano válido.';
+      this.errosCampos['ano'] = 'Informe um ano vÃ¡lido.';
     }
 
     return Object.keys(this.errosCampos).length === 0;
@@ -155,18 +157,18 @@ export class VeiculosComponent implements OnInit {
       ano: Number(this.novoVeiculo.ano)
     }).subscribe({
       next: () => {
-        this.sucesso = 'Veículo cadastrado com sucesso!';
+        this.sucesso = 'VeÃ­culo cadastrado com sucesso!';
         this.router.navigate(['/veiculos']);
       },
       error: (err) => {
         console.log(err);
 
         if (typeof err?.error === 'string' && err.error.includes('ERR_002')) {
-          this.errosCampos['placa'] = 'Formato de placa inválido.';
+          this.errosCampos['placa'] = 'Formato de placa invÃ¡lido.';
           return;
         }
 
-        this.erro = err?.error || 'Erro ao cadastrar veículo';
+        this.erro = err?.error || 'Erro ao cadastrar veÃ­culo';
       }
     });
   }
@@ -182,18 +184,18 @@ export class VeiculosComponent implements OnInit {
 
     this.veiculosService.atualizarVeiculo(veiculoAtualizado).subscribe({
       next: () => {
-        this.sucesso = 'Veículo atualizado com sucesso!';
+        this.sucesso = 'VeÃ­culo atualizado com sucesso!';
         this.router.navigate(['/veiculos']);
       },
       error: (err) => {
         console.log(err);
 
         if (typeof err?.error === 'string' && err.error.includes('ERR_002')) {
-          this.errosCampos['placa'] = 'Formato de placa inválido.';
+          this.errosCampos['placa'] = 'Formato de placa invÃ¡lido.';
           return;
         }
 
-        this.erro = err?.error || 'Erro ao atualizar veículo';
+        this.erro = err?.error || 'Erro ao atualizar veÃ­culo';
       }
     });
   }
@@ -214,12 +216,12 @@ export class VeiculosComponent implements OnInit {
 
     this.veiculosService.deletarVeiculo(id).subscribe({
       next: () => {
-        this.sucesso = 'Veículo excluído com sucesso!';
+        this.sucesso = 'VeÃ­culo excluÃ­do com sucesso!';
         this.carregarVeiculos();
       },
       error: (err) => {
         console.log(err);
-        this.erro = 'Erro ao excluir veículo';
+        this.erro = 'Erro ao excluir veÃ­culo';
       }
     });
   }
@@ -235,6 +237,9 @@ export class VeiculosComponent implements OnInit {
 
   nomeCliente(clienteId: string): string {
     const cliente = this.clientes.find(c => c.id === clienteId);
-    return cliente ? cliente.nome : 'Cliente não encontrado';
+    return cliente ? cliente.nome : 'Cliente nÃ£o encontrado';
   }
 }
+
+
+

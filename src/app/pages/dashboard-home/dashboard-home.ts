@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+﻿import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 
@@ -9,7 +9,9 @@ import { HttpClient } from '@angular/common/http';
   templateUrl: './dashboard-home.html',
   styleUrl: './dashboard-home.css'
 })
+/* v8 ignore start -- Angular decorator metadata */
 export class DashboardHomeComponent implements OnInit {
+/* v8 ignore stop */
 
   totalClientes = 0;
   totalVeiculos = 0;
@@ -36,3 +38,5 @@ export class DashboardHomeComponent implements OnInit {
       .subscribe(res => this.totalOrdens = res.length);
   }
 }
+
+

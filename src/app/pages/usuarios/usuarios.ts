@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+﻿import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -11,7 +11,9 @@ import { UsuariosService, Usuario } from '../../services/usuarios';
   templateUrl: './usuarios.html',
   styleUrl: './usuarios.css'
 })
+/* v8 ignore start -- Angular decorator metadata */
 export class UsuariosComponent implements OnInit {
+/* v8 ignore stop */
   usuarios: Usuario[] = [];
   modoFormulario = false;
 
@@ -47,7 +49,7 @@ export class UsuariosComponent implements OnInit {
       },
       error: (err) => {
         console.log(err);
-        this.erro = 'Erro ao carregar usuários. Apenas ADMIN pode acessar esta tela.';
+        this.erro = 'Erro ao carregar usuÃ¡rios. Apenas ADMIN pode acessar esta tela.';
         this.cdr.detectChanges();
       }
     });
@@ -73,7 +75,7 @@ export class UsuariosComponent implements OnInit {
     }
 
     if (![1, 2, 3].includes(Number(this.novoUsuario.perfil))) {
-      this.erro = 'Perfil inválido.';
+      this.erro = 'Perfil invÃ¡lido.';
       return;
     }
 
@@ -84,19 +86,19 @@ export class UsuariosComponent implements OnInit {
       perfil: Number(this.novoUsuario.perfil)
     }).subscribe({
       next: () => {
-        this.sucesso = 'Usuário cadastrado com sucesso!';
+        this.sucesso = 'UsuÃ¡rio cadastrado com sucesso!';
         this.router.navigate(['/usuarios']);
       },
       error: (err) => {
         console.log(err);
-        this.erro = err?.error || 'Erro ao cadastrar usuário.';
+        this.erro = err?.error || 'Erro ao cadastrar usuÃ¡rio.';
       }
     });
   }
 
   nomePerfil(perfil: string): string {
     if (perfil === 'ADMIN') return 'Admin';
-    if (perfil === 'FUNCIONARIO') return 'Funcionário';
+    if (perfil === 'FUNCIONARIO') return 'FuncionÃ¡rio';
     if (perfil === 'CLIENTE') return 'Cliente';
 
     return perfil;
@@ -115,3 +117,6 @@ export class UsuariosComponent implements OnInit {
     this.router.navigate(['/login']);
   }
 }
+
+
+

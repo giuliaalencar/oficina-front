@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+﻿import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -11,7 +11,9 @@ import { AuthService } from '../../services/auth';
   templateUrl: './login.html',
   styleUrl: './login.css'
 })
+/* v8 ignore start -- Angular decorator metadata */
 export class LoginComponent {
+/* v8 ignore stop */
   email = '';
   senha = '';
   erro = '';
@@ -45,7 +47,7 @@ export class LoginComponent {
         this.carregando = false;
 
         if (!res?.token) {
-          this.erro = 'Login realizado, mas o token não foi retornado.';
+          this.erro = 'Login realizado, mas o token nÃ£o foi retornado.';
           return;
         }
 
@@ -64,12 +66,12 @@ export class LoginComponent {
         console.log('ERRO LOGIN:', err);
 
         if (err.status === 0) {
-          this.erro = 'Não foi possível conectar com a API. Aguarde alguns segundos e tente novamente.';
+          this.erro = 'NÃ£o foi possÃ­vel conectar com a API. Aguarde alguns segundos e tente novamente.';
           return;
         }
 
         if (err.status === 401) {
-          this.erro = 'Email ou senha inválidos.';
+          this.erro = 'Email ou senha invÃ¡lidos.';
           return;
         }
 
@@ -78,3 +80,6 @@ export class LoginComponent {
     });
   }
 }
+
+
+

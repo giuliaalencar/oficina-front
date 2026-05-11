@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+﻿import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -11,7 +11,9 @@ import { ClientesService, Cliente } from '../../services/clientes';
   styleUrl: './clientes.css',
   imports: [CommonModule, FormsModule, RouterLink],
 })
+/* v8 ignore start -- Angular decorator metadata */
 export class ClientesComponent implements OnInit {
+/* v8 ignore stop */
   clientes: Cliente[] = [];
   erro = '';
   sucesso = '';
@@ -78,7 +80,7 @@ export class ClientesComponent implements OnInit {
       },
       error: (err) => {
         console.log(err);
-        this.erro = 'Cliente não encontrado.';
+        this.erro = 'Cliente nÃ£o encontrado.';
         this.cdr.detectChanges();
       }
     });
@@ -104,7 +106,7 @@ export class ClientesComponent implements OnInit {
     if (!this.novoCliente.cpfCnpj.trim()) {
       this.errosCampos['cpfCnpj'] = 'Informe o CPF ou CNPJ.';
     } else if (documento.length !== 11 && documento.length !== 14) {
-      this.errosCampos['cpfCnpj'] = 'CPF/CNPJ inválido.';
+      this.errosCampos['cpfCnpj'] = 'CPF/CNPJ invÃ¡lido.';
     }
 
     return Object.keys(this.errosCampos).length === 0;
@@ -135,7 +137,7 @@ export class ClientesComponent implements OnInit {
         console.log('ERRO AO CRIAR:', err);
 
         if (typeof err?.error === 'string' && err.error.includes('ERR_001')) {
-          this.errosCampos['cpfCnpj'] = 'CPF/CNPJ inválido.';
+          this.errosCampos['cpfCnpj'] = 'CPF/CNPJ invÃ¡lido.';
           return;
         }
 
@@ -161,7 +163,7 @@ export class ClientesComponent implements OnInit {
         console.log('ERRO AO ATUALIZAR:', err);
 
         if (typeof err?.error === 'string' && err.error.includes('ERR_001')) {
-          this.errosCampos['cpfCnpj'] = 'CPF/CNPJ inválido.';
+          this.errosCampos['cpfCnpj'] = 'CPF/CNPJ invÃ¡lido.';
           return;
         }
 
@@ -186,7 +188,7 @@ export class ClientesComponent implements OnInit {
 
     this.clientesService.deletarCliente(id).subscribe({
       next: () => {
-        this.sucesso = 'Cliente excluído com sucesso!';
+        this.sucesso = 'Cliente excluÃ­do com sucesso!';
         this.carregarClientes();
       },
       error: (err) => {
@@ -205,3 +207,6 @@ export class ClientesComponent implements OnInit {
     this.router.navigate(['/login']);
   }
 }
+
+
+
