@@ -12,11 +12,12 @@ function criarComponente(url = '/ordens-servico', podeGerenciar = true) {
     getVeiculos: vi.fn(),
     getItensDisponiveis: vi.fn(),
     addItem: vi.fn(),
-    atualizarStatus: vi.fn()
+    atualizarStatus: vi.fn(),
+    baixarOrcamentoPdf: vi.fn()
   };
   const cdr = { detectChanges: vi.fn() };
   const authService = { podeGerenciarSistema: vi.fn().mockReturnValue(podeGerenciar) };
-  const component = new OrdensServicoComponent(router as any, service as any, cdr as any, authService as any);
+  const component = new OrdensServicoComponent(router as any, service as any, cdr as any, authService as any, 'browser' as any);
   return { component, router, service };
 }
 
@@ -121,6 +122,52 @@ describe('OrdensServicoComponent', () => {
     expect(component.nomeVeiculoDaOrdem({ veiculo: { placa: 'AAA1A11', marca: 'Toyota', modelo: 'Corolla' } })).toContain('AAA1A11');
     expect(component.proximoStatus('Recebida')).toBeTruthy();
     expect(component.proximoStatus('Entregue')).toBeNull();
+  });
+
+  it('deve baixar PDF do orcamento', () => {
+    const { component, service } = criarComponente();
+    const createObjectURL = vi.spyOn(window.URL, 'createObjectURL').mockReturnValue('blob:orcamento');
+    const revokeObjectURL = vi.spyOn(window.URL, 'revokeObjectURL').mockImplementation(() => {});
+    const click = vi.fn();
+    const createElement = vi.spyOn(document, 'createElement').mockReturnValue({ click } as any);
+
+    service.baixarOrcamentoPdf.mockReturnValue(of(new Blob(['pdf'], { type: 'application/pdf' })));
+
+    component.baixarOrcamentoPdf(ordem);
+
+    expect(service.baixarOrcamentoPdf).toHaveBeenCalledWith(1);
+    expect(click).toHaveBeenCalled();
+    expect(component.sucesso).toContain('PDF');
+
+    createObjectURL.mockRestore();
+    revokeObjectURL.mockRestore();
+    createElement.mockRestore();
+  });
+
+  it('deve ignorar salvamento do PDF fora do navegador', () => {
+    const { service } = criarComponente();
+    const router = { url: '/ordens-servico', navigate: vi.fn() };
+    const cdr = { detectChanges: vi.fn() };
+    const authService = { podeGerenciarSistema: vi.fn().mockReturnValue(true) };
+    const component = new OrdensServicoComponent(router as any, service as any, cdr as any, authService as any, 'server' as any);
+    service.baixarOrcamentoPdf.mockReturnValue(of(new Blob(['pdf'], { type: 'application/pdf' })));
+
+    component.baixarOrcamentoPdf(ordem);
+
+    expect(service.baixarOrcamentoPdf).toHaveBeenCalledWith(1);
+    expect(component.sucesso).toContain('PDF');
+  });
+
+  it('deve tratar erro ao baixar PDF do orcamento', () => {
+    const { component, service } = criarComponente();
+    service.baixarOrcamentoPdf.mockReturnValue(throwError(() => ({ status: 500 })));
+
+    component.baixarOrcamentoPdf(ordem);
+
+    expect(component.erro).toContain('PDF');
+
+    component.baixarOrcamentoPdf(null);
+    expect(component.erro).toContain('Selecione');
   });
 });
 

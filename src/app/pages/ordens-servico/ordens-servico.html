@@ -104,6 +104,10 @@
                       Ver detalhes
                     </button>
 
+                    <button class="btn btn-sm btn-outline-secondary" (click)="baixarOrcamentoPdf(ordem)">
+                      PDF
+                    </button>
+
                     <button
                       *ngIf="authService.podeGerenciarSistema() && proximoStatus(ordem.status)"
                       class="btn btn-sm btn-warning"
@@ -134,7 +138,12 @@
         <div class="card-body p-4">
           <div class="d-flex justify-content-between align-items-center mb-3">
             <h4 class="fw-semibold mb-0">Detalhes da ordem #{{ ordemSelecionada.id }}</h4>
-            <span class="badge text-bg-secondary">{{ ordemSelecionada.status }}</span>
+            <div class="d-flex gap-2 align-items-center">
+              <button class="btn btn-sm btn-outline-secondary" (click)="baixarOrcamentoPdf(ordemSelecionada)">
+                Baixar PDF
+              </button>
+              <span class="badge text-bg-secondary">{{ ordemSelecionada.status }}</span>
+            </div>
           </div>
 
           <p><strong>Veículo:</strong> {{ nomeVeiculoDaOrdem(ordemSelecionada) }}</p>

@@ -55,6 +55,17 @@ describe('OrdensServicoService', () => {
     req.flush(ordem);
   });
 
+  it('deve baixar orcamento em PDF', () => {
+    const arquivo = new Blob(['pdf'], { type: 'application/pdf' });
+
+    service.baixarOrcamentoPdf(5).subscribe(res => expect(res).toEqual(arquivo));
+
+    const req = httpMock.expectOne(`${ordensUrl}/5/orcamento-pdf`);
+    expect(req.request.method).toBe('GET');
+    expect(req.request.responseType).toBe('blob');
+    req.flush(arquivo);
+  });
+
   it('deve criar ordem, adicionar item e atualizar status', () => {
     const ordem: OrdemServico = { id: 1, veiculoId: 'v1', dataEntrada: '2026-05-07', status: 'Recebida', valorTotal: 0, itens: [] };
 

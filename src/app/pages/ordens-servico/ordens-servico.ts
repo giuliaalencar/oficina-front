@@ -1,5 +1,5 @@
-﻿import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+﻿import { ChangeDetectorRef, Component, Inject, OnInit, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth';
@@ -41,7 +41,8 @@ export class OrdensServicoComponent implements OnInit {
     private router: Router,
     private ordensService: OrdensServicoService,
     private cdr: ChangeDetectorRef,
-    public authService: AuthService
+    public authService: AuthService,
+    @Inject(PLATFORM_ID) private platformId: Object
   ) {}
 
   ngOnInit(): void {
@@ -241,7 +242,43 @@ export class OrdensServicoComponent implements OnInit {
       }
     });
   }
+  baixarOrcamentoPdf(ordem: OrdemServico | any) {
+    if (!ordem?.id) {
+      this.erro = 'Selecione uma ordem para gerar o orçamento.';
+      return;
+    }
 
+    this.erro = '';
+    this.sucesso = '';
+
+    this.ordensService.baixarOrcamentoPdf(ordem.id).subscribe({
+      next: (arquivo) => {
+        this.salvarPdf(arquivo, `orcamento-os-${ordem.id}.pdf`);
+        this.sucesso = 'Orçamento em PDF gerado com sucesso!';
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.log(err);
+        this.erro = 'Erro ao gerar PDF do orçamento.';
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  private salvarPdf(arquivo: Blob, nomeArquivo: string) {
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
+    }
+
+    const url = window.URL.createObjectURL(arquivo);
+    const link = document.createElement('a');
+
+    link.href = url;
+    link.download = nomeArquivo;
+    link.click();
+
+    window.URL.revokeObjectURL(url);
+  }
   nomeVeiculo(veiculoId: string): string {
     const veiculo = this.veiculos.find(v => v.id === veiculoId);
 
@@ -285,6 +322,7 @@ export class OrdensServicoComponent implements OnInit {
     this.router.navigate(['/login']);
   }
 }
+
 
 
 

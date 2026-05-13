@@ -65,4 +65,10 @@ export class OrdensServicoService {
       status
     });
   }
+
+  baixarOrcamentoPdf(ordemId: number): Observable<Blob> {
+    return this.http.get(`${this.ordensUrl}/${ordemId}/orcamento-pdf`, {
+      responseType: 'blob'
+    });
+  }
 }
