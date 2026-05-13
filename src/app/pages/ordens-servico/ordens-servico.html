@@ -153,6 +153,48 @@
 
           <h5 class="fw-semibold mt-4 mb-3">Itens da ordem</h5>
 
+          <div *ngIf="authService.podeGerenciarSistema()" class="card border-0 bg-light mb-4">
+            <div class="card-body">
+              <h6 class="fw-semibold mb-3">Adicionar item</h6>
+
+              <div class="row g-3 align-items-end">
+                <div class="col-md-7">
+                  <label class="form-label">Item</label>
+                  <select [(ngModel)]="novoItem.itemId" class="form-select">
+                    <option value="">Selecione um item</option>
+                    <option *ngFor="let item of itensDisponiveis" [value]="item.id">
+                      {{ item.descricao }} - {{ item.valor | currency:'BRL' }}
+                    </option>
+                  </select>
+
+                  <div class="field-error" *ngIf="errosCampos['itemId']">
+                    {{ errosCampos['itemId'] }}
+                  </div>
+                </div>
+
+                <div class="col-md-3">
+                  <label class="form-label">Quantidade</label>
+                  <input
+                    type="number"
+                    min="1"
+                    [(ngModel)]="novoItem.quantidade"
+                    class="form-control"
+                  />
+
+                  <div class="field-error" *ngIf="errosCampos['quantidade']">
+                    {{ errosCampos['quantidade'] }}
+                  </div>
+                </div>
+
+                <div class="col-md-2">
+                  <button class="btn btn-primary w-100" (click)="adicionarItem()">
+                    Adicionar
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div class="table-responsive" *ngIf="(ordemSelecionada.itens?.length || 0) > 0; else semItens">
             <table class="table align-middle table-hover">
               <thead class="table-light">

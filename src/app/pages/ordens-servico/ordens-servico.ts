@@ -58,6 +58,7 @@ export class OrdensServicoComponent implements OnInit {
 
     if (this.authService.podeGerenciarSistema()) {
       this.carregarResumo();
+      this.carregarItens();
     }
   }
 
