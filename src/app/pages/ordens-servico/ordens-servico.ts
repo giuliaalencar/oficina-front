@@ -300,10 +300,10 @@ export class OrdensServicoComponent implements OnInit {
 
   proximoStatus(statusAtual: string): string | null {
     const fluxo: Record<string, string> = {
-      'Recebida': 'Em DiagnÃ³stico',
-      'Em DiagnÃ³stico': 'Aguardando AprovaÃ§Ã£o',
-      'Aguardando AprovaÃ§Ã£o': 'Em ExecuÃ§Ã£o',
-      'Em ExecuÃ§Ã£o': 'Finalizada',
+      'Recebida': 'Em Diagn\u00f3stico',
+      'Em Diagn\u00f3stico': 'Aguardando Aprova\u00e7\u00e3o',
+      'Aguardando Aprova\u00e7\u00e3o': 'Em Execu\u00e7\u00e3o',
+      'Em Execu\u00e7\u00e3o': 'Finalizada',
       'Finalizada': 'Entregue'
     };
 
