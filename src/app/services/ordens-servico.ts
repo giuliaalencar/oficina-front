@@ -66,6 +66,10 @@ export class OrdensServicoService {
     });
   }
 
+  avancarStatus(ordemId: number) {
+    return this.http.post(`${this.ordensUrl}/${ordemId}/avancar-status`, {});
+  }
+
   baixarOrcamentoPdf(ordemId: number): Observable<Blob> {
     return this.http.get(`${this.ordensUrl}/${ordemId}/orcamento-pdf`, {
       responseType: 'blob'

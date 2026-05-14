@@ -220,7 +220,7 @@ export class OrdensServicoComponent implements OnInit {
     this.erro = '';
     this.sucesso = '';
 
-    this.ordensService.atualizarStatus(ordem.id, novoStatus).subscribe({
+    this.ordensService.avancarStatus(ordem.id).subscribe({
       next: () => {
         this.sucesso = 'Status atualizado com sucesso!';
         this.carregarOrdens();
