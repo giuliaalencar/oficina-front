@@ -1,0 +1,44 @@
+flowchart TB
+  usuario["Ator: Usuario autenticado<br/>(Admin / Funcionario / Cliente)"]
+  api["Ator externo: API Oficina"]
+  smtp["Ator externo: SMTP / SendGrid"]
+
+  subgraph sistema["Estoque, Alerta e Orcamento PDF - Sistema Oficina"]
+    direction LR
+    reservarEstoque(("Reservar estoque<br/>das pecas"))
+    validarEstoque(("Validar estoque<br/>disponivel"))
+    baixarEstoque(("Baixar estoque<br/>em execucao"))
+    verificarBaixoEstoque(("Verificar itens<br/>com estoque baixo"))
+    enviarEmail(("Enviar alerta<br/>por e-mail"))
+    informarSemItens(("Informar ausencia<br/>de itens baixos"))
+    informarSmtp(("Informar SMTP<br/>nao configurado"))
+    solicitarPdf(("Solicitar orcamento<br/>em PDF"))
+    validarPermissao(("Validar permissao<br/>da ordem"))
+    gerarPdf(("Gerar PDF<br/>no back-end"))
+    baixarPdf(("Baixar arquivo<br/>PDF"))
+    exibirErro(("Exibir mensagem<br/>de erro"))
+  end
+
+  usuario --> solicitarPdf
+  usuario --> baixarPdf
+
+  reservarEstoque -. "<<include>>" .-> validarEstoque
+  baixarEstoque -. "<<include>>" .-> verificarBaixoEstoque
+  verificarBaixoEstoque -. "<<extend>>" .-> enviarEmail
+  verificarBaixoEstoque -. "<<extend>>" .-> informarSemItens
+  verificarBaixoEstoque -. "<<extend>>" .-> informarSmtp
+  solicitarPdf -. "<<include>>" .-> validarPermissao
+  solicitarPdf -. "<<include>>" .-> gerarPdf
+  solicitarPdf -. "<<include>>" .-> baixarPdf
+  solicitarPdf -. "<<extend>>" .-> exibirErro
+
+  reservarEstoque -. "Ao avancar para<br/>Aguardando Aprovacao" .-> api
+  baixarEstoque -. "Ao avancar para<br/>Em Execucao" .-> api
+  verificarBaixoEstoque -. "POST /api/itens/notificar-estoque-baixo" .-> api
+  solicitarPdf -. "GET /api/ordens-servico/{id}/orcamento-pdf" .-> api
+  enviarEmail -. "SMTP configurado" .-> smtp
+
+  classDef actor fill:#f8f9fa,stroke:#343a40,stroke-width:1px,color:#1f2933;
+  classDef usecase fill:#eef7ff,stroke:#2f80ed,stroke-width:1px,color:#1f2933;
+  class usuario,api,smtp actor;
+  class reservarEstoque,validarEstoque,baixarEstoque,verificarBaixoEstoque,enviarEmail,informarSemItens,informarSmtp,solicitarPdf,validarPermissao,gerarPdf,baixarPdf,exibirErro usecase;

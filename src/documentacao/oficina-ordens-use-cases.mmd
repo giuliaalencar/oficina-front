@@ -1,0 +1,51 @@
+flowchart TB
+  usuario["Ator: Usuario autenticado<br/>(Admin / Funcionario)"]
+  cliente["Ator: Cliente"]
+  api["Ator externo: API OrdensServico"]
+
+  subgraph sistema["Ordens de Servico - Sistema Oficina"]
+    direction LR
+    listarOrdens(("Listar ordens<br/>de servico"))
+    filtrarCliente(("Filtrar ordens<br/>do cliente logado"))
+    criarOrdem(("Criar ordem<br/>de servico"))
+    selecionarVeiculo(("Selecionar<br/>veiculo"))
+    visualizarDetalhe(("Visualizar detalhe<br/>da ordem"))
+    adicionarItem(("Adicionar item<br/>na ordem"))
+    validarQuantidade(("Validar<br/>quantidade"))
+    calcularTotal(("Calcular valor<br/>total"))
+    avancarStatus(("Avancar status<br/>da ordem"))
+    validarFluxo(("Validar sequencia<br/>do status"))
+    exibirErro(("Exibir mensagem<br/>de erro"))
+    exibirSucesso(("Exibir mensagem<br/>de sucesso"))
+  end
+
+  usuario --> listarOrdens
+  usuario --> criarOrdem
+  usuario --> visualizarDetalhe
+  usuario --> adicionarItem
+  usuario --> avancarStatus
+  cliente --> listarOrdens
+  cliente --> visualizarDetalhe
+
+  listarOrdens -. "<<extend>>" .-> filtrarCliente
+  criarOrdem -. "<<include>>" .-> selecionarVeiculo
+  criarOrdem -. "<<extend>>" .-> exibirErro
+  visualizarDetalhe -. "<<include>>" .-> listarOrdens
+  adicionarItem -. "<<include>>" .-> validarQuantidade
+  adicionarItem -. "<<include>>" .-> calcularTotal
+  adicionarItem -. "<<extend>>" .-> exibirErro
+  adicionarItem -. "<<include>>" .-> exibirSucesso
+  avancarStatus -. "<<include>>" .-> validarFluxo
+  avancarStatus -. "<<extend>>" .-> exibirErro
+  avancarStatus -. "<<include>>" .-> exibirSucesso
+
+  listarOrdens -. "GET /api/ordens-servico" .-> api
+  visualizarDetalhe -. "GET /api/ordens-servico/{id}" .-> api
+  criarOrdem -. "POST /api/ordens-servico" .-> api
+  adicionarItem -. "POST /api/ordens-servico/{id}/itens" .-> api
+  avancarStatus -. "POST /api/ordens-servico/{id}/avancar-status" .-> api
+
+  classDef actor fill:#f8f9fa,stroke:#343a40,stroke-width:1px,color:#1f2933;
+  classDef usecase fill:#eef7ff,stroke:#2f80ed,stroke-width:1px,color:#1f2933;
+  class usuario,cliente,api actor;
+  class listarOrdens,filtrarCliente,criarOrdem,selecionarVeiculo,visualizarDetalhe,adicionarItem,validarQuantidade,calcularTotal,avancarStatus,validarFluxo,exibirErro,exibirSucesso usecase;

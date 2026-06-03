@@ -1,0 +1,29 @@
+flowchart TB
+  usuario["Ator: Usuario autenticado<br/>(Admin / Funcionario / Cliente)"]
+
+  subgraph sistema["Sistema Oficina"]
+    direction LR
+    autenticacao(("Autenticacao e<br/>controle de perfil"))
+    cadastros(("Gestao de<br/>cadastros"))
+    ordens(("Gestao de<br/>ordens de servico"))
+    estoquePdf(("Estoque, alerta e<br/>orcamento PDF"))
+  end
+
+  usuario --> autenticacao
+  usuario --> cadastros
+  usuario --> ordens
+  usuario --> estoquePdf
+
+  autenticacao -. "detalhado em" .-> autenticacaoArquivo["Autenticacao e Perfil<br/>- Caso de Uso"]
+  cadastros -. "detalhado em" .-> cadastrosArquivo["Cadastros<br/>- Caso de Uso"]
+  ordens -. "detalhado em" .-> ordensArquivo["Ordens de Servico<br/>- Caso de Uso"]
+  estoquePdf -. "detalhado em" .-> estoquePdfArquivo["Estoque e PDF<br/>- Caso de Uso"]
+
+  classDef actor fill:#f8f9fa,stroke:#343a40,stroke-width:1px,color:#1f2933;
+  classDef usecase fill:#eef7ff,stroke:#2f80ed,stroke-width:1px,color:#1f2933;
+  classDef artifact fill:#fff7e6,stroke:#b7791f,stroke-width:1px,color:#1f2933;
+  classDef system fill:#fffde7,stroke:#c9b458,stroke-width:1px,color:#1f2933;
+
+  class usuario actor;
+  class autenticacao,cadastros,ordens,estoquePdf usecase;
+  class autenticacaoArquivo,cadastrosArquivo,ordensArquivo,estoquePdfArquivo artifact;

@@ -1,0 +1,56 @@
+flowchart TB
+  usuario["Ator: Usuario autenticado<br/>(Admin / Funcionario)"]
+  admin["Ator: Admin"]
+  api["Ator externo: API Oficina"]
+
+  subgraph sistema["Cadastros - Sistema Oficina"]
+    direction LR
+    gerenciarClientes(("Gerenciar<br/>clientes"))
+    validarDocumento(("Validar<br/>CPF/CNPJ"))
+    salvarCliente(("Salvar<br/>cliente"))
+    gerenciarVeiculos(("Gerenciar<br/>veiculos"))
+    selecionarCliente(("Selecionar<br/>cliente"))
+    validarPlaca(("Validar<br/>placa"))
+    salvarVeiculo(("Salvar<br/>veiculo"))
+    gerenciarItens(("Gerenciar<br/>itens"))
+    validarItem(("Validar item"))
+    salvarItem(("Salvar<br/>item"))
+    gerenciarUsuarios(("Gerenciar<br/>usuarios"))
+    validarPerfil(("Validar<br/>perfil"))
+    salvarUsuario(("Salvar usuario<br/>ou resetar senha"))
+    exibirErro(("Exibir mensagem<br/>de erro"))
+    exibirSucesso(("Exibir mensagem<br/>de sucesso"))
+  end
+
+  usuario --> gerenciarClientes
+  usuario --> gerenciarVeiculos
+  usuario --> gerenciarItens
+  admin --> gerenciarUsuarios
+
+  gerenciarClientes -. "<<include>>" .-> validarDocumento
+  gerenciarClientes -. "<<include>>" .-> salvarCliente
+  gerenciarClientes -. "<<extend>>" .-> exibirErro
+  gerenciarClientes -. "<<include>>" .-> exibirSucesso
+
+  gerenciarVeiculos -. "<<include>>" .-> selecionarCliente
+  gerenciarVeiculos -. "<<include>>" .-> validarPlaca
+  gerenciarVeiculos -. "<<include>>" .-> salvarVeiculo
+  gerenciarVeiculos -. "<<extend>>" .-> exibirErro
+
+  gerenciarItens -. "<<include>>" .-> validarItem
+  gerenciarItens -. "<<include>>" .-> salvarItem
+  gerenciarItens -. "<<extend>>" .-> exibirErro
+
+  gerenciarUsuarios -. "<<include>>" .-> validarPerfil
+  gerenciarUsuarios -. "<<include>>" .-> salvarUsuario
+  gerenciarUsuarios -. "<<extend>>" .-> exibirErro
+
+  salvarCliente -. "GET/POST/PUT/DELETE /api/clientes" .-> api
+  salvarVeiculo -. "GET/POST/PUT/DELETE /api/veiculos" .-> api
+  salvarItem -. "GET/POST/PUT/DELETE /api/itens" .-> api
+  salvarUsuario -. "GET/POST /api/auth/usuarios<br/>POST /api/auth/resetar-senha" .-> api
+
+  classDef actor fill:#f8f9fa,stroke:#343a40,stroke-width:1px,color:#1f2933;
+  classDef usecase fill:#eef7ff,stroke:#2f80ed,stroke-width:1px,color:#1f2933;
+  class usuario,admin,api actor;
+  class gerenciarClientes,validarDocumento,salvarCliente,gerenciarVeiculos,selecionarCliente,validarPlaca,salvarVeiculo,gerenciarItens,validarItem,salvarItem,gerenciarUsuarios,validarPerfil,salvarUsuario,exibirErro,exibirSucesso usecase;

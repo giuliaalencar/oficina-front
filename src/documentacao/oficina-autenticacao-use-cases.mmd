@@ -1,0 +1,39 @@
+flowchart TB
+  usuario["Ator: Usuario autenticado<br/>(Admin / Funcionario / Cliente)"]
+  api["Ator externo: API Auth"]
+
+  subgraph sistema["Autenticacao e Perfil - Sistema Oficina"]
+    direction LR
+    acessarLogin(("Acessar tela<br/>de login"))
+    informarCredenciais(("Informar e-mail<br/>e senha"))
+    autenticar(("Autenticar<br/>usuario"))
+    validarCredenciais(("Validar usuario<br/>e senha"))
+    receberToken(("Receber token<br/>JWT"))
+    salvarToken(("Salvar token<br/>no navegador"))
+    identificarPerfil(("Identificar perfil<br/>do usuario"))
+    redirecionar(("Redirecionar<br/>por perfil"))
+    controlarMenu(("Exibir menu<br/>permitido"))
+    logout(("Realizar logout"))
+    exibirErro(("Exibir mensagem<br/>de erro"))
+  end
+
+  usuario --> acessarLogin
+  usuario --> informarCredenciais
+  usuario --> logout
+
+  informarCredenciais -. "<<include>>" .-> autenticar
+  autenticar -. "<<include>>" .-> validarCredenciais
+  autenticar -. "<<include>>" .-> receberToken
+  receberToken -. "<<include>>" .-> salvarToken
+  salvarToken -. "<<include>>" .-> identificarPerfil
+  identificarPerfil -. "<<include>>" .-> redirecionar
+  identificarPerfil -. "<<include>>" .-> controlarMenu
+  autenticar -. "<<extend>>" .-> exibirErro
+
+  autenticar -. "POST /api/auth/login" .-> api
+  api --> validarCredenciais
+
+  classDef actor fill:#f8f9fa,stroke:#343a40,stroke-width:1px,color:#1f2933;
+  classDef usecase fill:#eef7ff,stroke:#2f80ed,stroke-width:1px,color:#1f2933;
+  class usuario,api actor;
+  class acessarLogin,informarCredenciais,autenticar,validarCredenciais,receberToken,salvarToken,identificarPerfil,redirecionar,controlarMenu,logout,exibirErro usecase;
